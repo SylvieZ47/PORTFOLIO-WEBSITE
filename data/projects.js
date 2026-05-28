@@ -461,7 +461,11 @@ window.PROJECTS = [
     summary: {
       en: 'A 1,200 sq ft ADU added to a residential lot on San Vicente. A small house with its own discipline — held against the main house, opening to its own slice of garden.',
       zh: '一座 1,200 平方英尺的 ADU，紧贴主屋而立。一座有自身秩序的小屋，开向自己的一片庭院。'
-    },
+    },    
+    description: {
+      en: 'At the heart of the Carthay Neighborhoods Historic District in Los Angeles, a 1920s garage has crouched in the rear yard for nearly a century. Local code permits no more than half of the existing structure to be demolished in a single intervention; the old box-like massing thus persists as an irreducible fact — at once a constraint and a point of departure. \n\nRather than being concealed, it is brought into focus. The original garage volume is retained on the ground floor; a second story emerges above as a similar volume — laid sideways, offset, gently pressing down — the two masses interlocking in a posture of mutual insertion. No attempt is made to blur the line between old and new, nor to deliberately distinguish them. White stucco and wood-toned openings set the rhythm, echoing the existing language of the main house at the front.',
+      zh: '场地位于洛杉矶卡萨（Carthay）历史保护区的中心，一座1920年代的车库蹲守后院近百年。法规约定，单次改建拆除不得超过现有结构的一半，旧屋的方盒子形体因此成为无法消融的存在。它既是限制，也是设计的起点。\n\n我们没有试图掩饰它，反而将其推向焦点。原车库的体量被保留在一层；新增的二层以另一相似体量出现，横放、错位、轻轻叠压其上，两个体块以穿插的姿态相互咬合。新旧之间不做模糊处理，亦不刻意区分。白色灰泥木色门窗点出节奏，呼应前院主屋的现有语汇。历史在这里不是被复刻的符号，而是被尊重的形体。'
+    },    
     images: [
       { src: 'placeholder', tone: 'plaster', label: '01 · Approach', aspect: '16/10' },
       { src: 'placeholder', tone: 'wood', label: '02 · Garden side', aspect: '4/5' }
