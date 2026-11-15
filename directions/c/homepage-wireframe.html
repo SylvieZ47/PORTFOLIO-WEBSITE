@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="design_doc_mode" content="canvas" />
+<title>主页改版 — 窗口草图</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Noto+Sans+SC:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#1a1a18;--mute:#8a8a84;--line:#c9c9c2;--paper:#fff}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Noto Sans SC","JetBrains Mono",sans-serif;color:var(--ink)}
+a{color:var(--ink)}a:hover{color:var(--mute)}
+.frame{position:absolute;background:var(--paper);border:1px solid var(--line)}
+.flabel{position:absolute;top:-30px;left:0;font:500 13px/1 "JetBrains Mono",monospace;letter-spacing:.08em;color:var(--mute);text-transform:uppercase}
+.win{position:absolute;inset:0;display:flex;flex-direction:column}
+.chrome{height:26px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:6px;padding:0 10px;flex:none}
+.dot{width:7px;height:7px;border-radius:50%;border:1px solid var(--line)}
+.body{flex:1;position:relative;overflow:hidden;background:#242320}
+.rail{position:absolute;left:0;top:0;bottom:0;width:44px;border-right:1px dashed rgba(255,255,255,.18);display:flex;flex-direction:column;align-items:center;gap:14px;padding-top:16px;z-index:5}
+.rail i{display:block;width:14px;height:14px;border:1px solid rgba(255,255,255,.45);border-radius:2px}
+.rail .pf{border-radius:50%;background:rgba(255,255,255,.14)}
+.stage{position:absolute;inset:0 0 0 44px}
+.sk{font:400 11px/1.4 "JetBrains Mono",monospace;color:rgba(255,255,255,.4);letter-spacing:.06em}
+.ghost{position:absolute;border:1px dashed rgba(255,255,255,.22)}
+.note{position:absolute;font:400 12px/1.5 "Noto Sans SC",sans-serif;color:var(--mute)}
+.note b{color:var(--ink);font-weight:500}
+.cal{position:absolute;width:180px;font:500 10px/1.5 "JetBrains Mono",monospace;color:#c0703a;letter-spacing:.06em}
+.cal:before{content:"";position:absolute;left:-14px;top:3px;width:9px;height:1px;background:#c0703a}
+.grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px);background-size:56px 56px}
+.ico{position:absolute;width:52px;height:52px;border:1px dashed rgba(255,255,255,.3);display:grid;place-items:center;font:400 9px/1 "JetBrains Mono",monospace;color:rgba(255,255,255,.35)}
+.ico.on{border-style:solid;border-color:rgba(255,255,255,.6);color:rgba(255,255,255,.7)}
+.thumb{position:absolute;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.5)}
+.thumb span{position:absolute;left:8px;bottom:7px;font:500 11px/1 "JetBrains Mono",monospace;color:#fff;letter-spacing:.04em}
+.thumb:before{content:"渲染缩略";position:absolute;inset:0;display:grid;place-items:center;font:400 10px/1 "Noto Sans SC";color:rgba(255,255,255,.35)}
+h1.t{position:absolute;margin:0;font:500 26px/1 "Noto Sans SC";letter-spacing:.02em}
+.legend{position:absolute;font:400 12px/1.7 "Noto Sans SC",sans-serif;color:var(--ink)}
+.legend h3{margin:0 0 8px;font:500 12px/1 "JetBrains Mono",monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--mute)}
+.legend ol{margin:0;padding-left:18px}
+.legend li{margin-bottom:7px}
+.legend li b{font-weight:500}
+.legend hr{border:0;border-top:1px solid var(--line);margin:16px 0}
+.q{color:#c0703a}
+</style>
+</head>
+<body>
+
+<h1 class="t" style="left:40px;top:34px">主页改版 — 窗口草图</h1>
+<div class="note" style="left:40px;top:72px;width:620px">只动两处：首屏 slogan 缩到角落；下面的 works 列表换成散落图标画布。侧栏、配色、字体、index 网格页、项目详情页都不动。</div>
+
+<!-- A: 首屏 -->
+<div class="frame" style="left:40px;top:150px;width:620px;height:400px">
+  <div class="flabel">A · 首屏（现有结构保留）</div>
+  <div class="win">
+    <div class="chrome"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+    <div class="body">
+      <div class="rail"><div class="pf dot" style="width:18px;height:18px"></div><i></i><i></i><i></i><i></i></div>
+      <div class="stage">
+        <div class="ghost" style="inset:0;border:none;background:repeating-linear-gradient(135deg,transparent 0 9px,rgba(255,255,255,.035) 9px 10px)">
+          <div style="position:absolute;left:4px;top:11px;width:160px;height:19px;font:500 14px/1 'Noto Sans SC';color:rgba(255,255,255,.92)">Sylvie Zhang</div>
+          <div style="position:absolute;left:1px;top:33px" class="sk">Architectural Designer</div>
+          <div style="position:absolute;left:3px;top:49px;width:321px;height:24px;font:400 20px/1.5 'JetBrains Mono',monospace;color:#FFFFFF;text-align:left;max-width:200px">Slogan</div>
+          <div style="position:absolute;left:363px;top:9px;width:321px;height:24px;font:400 10px/1.5 'JetBrains Mono',monospace;color:#FFFFFF81;text-align:right;max-width:200px">日期什么的</div>
+          <div class="ico on" style="position:absolute;left:85px;top:316px">sect</div>
+          <div class="ico on" style="position:absolute;left:247px;top:346px">sect</div>
+          <div class="ico on" style="position:absolute;left:401px;top:312px">sect</div>
+        </div>
+        <div class="sk" style="position:absolute;left:50%;top:46%;transform:translate(-50%,-50%);text-align:center">scroll-driven video<br>（接口保留 · 之后换 logo 小动画）</div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="cal" style="left:690px;top:452px">不见得接的这么紧密，但是video要与项目衔接自然紧凑一点（这三个位置是我随手摆的不要直接照原样用）</div>
+<div class="cal" style="left:690px;top:258px">视频接口原样留着</div>
+
+<!-- B: Works 画布 默认态 -->
+<div class="frame" style="left:40px;top:620px;width:620px;height:460px">
+  <div class="flabel">B · Works 画布 — 默认态（滚进来时）</div>
+  <div class="win">
+    <div class="chrome"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+    <div class="body">
+      <div class="rail"><div class="pf dot" style="width:18px;height:18px"></div><i></i><i></i><i></i><i></i></div>
+      <div class="stage">
+        <div class="grid"></div>
+        <div style="position:absolute;left:22px;top:18px;font:400 10px/1 'JetBrains Mono',monospace;color:rgba(255,255,255,.4);letter-spacing:.14em">WORKS — 17</div>
+        <div class="ico on" style="left:70px;top:62px">plan</div>
+        <div class="ico on" style="left:250px;top:40px">sect</div>
+        <div class="ico on" style="left:420px;top:86px">axon</div>
+        <div class="ico" style="left:140px;top:188px">—</div>
+        <div class="ico" style="left:330px;top:166px">—</div>
+        <div class="ico" style="left:480px;top:224px">—</div>
+        <div class="ico" style="left:60px;top:300px">—</div>
+        <div class="ico" style="left:238px;top:290px">—</div>
+        <div class="ico" style="left:400px;top:340px">—</div>
+        <div class="sk" style="position:absolute;left:22px;bottom:12px">↓ 继续滚动，后面的图标按位置自然进入视口（无淡入）</div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="cal" style="left:690px;top:700px">每个方块＝你之后要画的<br>一张简笔画（现在占位）</div>
+<div class="cal" style="left:690px;top:860px">不规则散布，吃现有网格<br>每屏 3–5 个</div>
+
+<!-- C: 展开态 -->
+<div class="frame" style="left:920px;top:620px;width:620px;height:460px">
+  <div class="flabel">C · 点一下 — 原地展开方形缩略图</div>
+  <div class="win">
+    <div class="chrome"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+    <div class="body">
+      <div class="rail"><div class="pf dot" style="width:18px;height:18px"></div><i></i><i></i><i></i><i></i></div>
+      <div class="stage">
+        <div class="grid"></div>
+        <div class="ico" style="left:70px;top:62px;opacity:.4">plan</div>
+        <div class="ico" style="left:480px;top:70px;opacity:.4">—</div>
+        <div class="ico" style="left:88px;top:300px;opacity:.4">—</div>
+        <div class="ico" style="left:470px;top:318px;opacity:.4">—</div>
+        <div class="thumb" style="left:196px;top:118px;width:200px;height:200px"><span>Project name ↗</span></div>
+        <div class="sk" style="position:absolute;left:196px;top:330px">再点＝进项目 · 点别处＝收回</div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="cal" style="left:1562px;top:740px">以图标为中心向外长<br>其余图标淡下去</div>
+
+<!-- 说明 -->
+<div class="legend" style="left:920px;top:150px;width:400px">
+  <h3>交互</h3>
+  <ol>
+    <li><b>静止</b>：只见简笔画图标，无标题、无图。</li>
+    <li><b>点一下</b>：图标原地撑开成方形渲染缩略图，图标名浮在底部，其余图标降到 40% 透明。</li>
+    <li><b>再点</b>：进项目详情页（现有页面，不动）。</li>
+    <li><b>点空白</b>：收回。同一时间只展开一个。</li>
+    <li><b>滚动出现</b>：不做淡入／位移动画，图标就按它在页面上的位置自然进入视口。</li>
+  </ol>
+  <hr>
+  <h3>待你确认</h3>
+  <ol>
+    <li class="q">图标占位先用虚线方块＋项目编号，你画完发我批量替换。导出成 SVG 或透明 PNG 都行，单色最好。</li>
+    <li class="q">17 个项目全放画布上，还是只放精选、其余留给 index 页？</li>
+    <li class="q">手机上画布是等比缩还是降成两列竖排？</li>
+  </ol>
+</div>
+</body>
+</html>
