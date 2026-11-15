@@ -26,6 +26,15 @@
 //                   size: 'large'  → 独占一行
 //                   size: 'small'  → 两栏并列中的一个
 //   awards        [{en, zh}]  可选（也用于显示"已建成"等状态）
+//   folder        可选 — assets/projects/ 下的文件夹名；省略时等于 slug
+//
+// 图片自动发现（build.py）：把文件放进 assets/projects/<folder>/ 即可，不必改这里。
+//   img_00_cover.*        封面
+//   *index-cover*         首页悬停展开用的图（可选，比例随意）
+//   icon.*                首页散点的手绘小图（可选；没有就用第一张图纸）
+//   img_NN_名字.*         正文图片，按文件名排序
+//   dwg_NN_名字.*         图纸，按文件名排序；名字会变成图注
+// 这里已经列出的图片保持这里的顺序和图注，没列出的自动接在后面。
 
 window.PROJECTS = [
   {
@@ -268,6 +277,7 @@ window.PROJECTS = [
   {
     id: 'p08',
     slug: 'pku-marxism-school-building',
+    folder: 'pku-teaching-building',
     title: { en: 'Marxism School Building, PKU', zh: '北京大学马克思主义学院教学楼' },
     year: 2019,
     location: { en: 'Haidian, Beijing', zh: '北京 海淀' },
@@ -490,6 +500,11 @@ window.PROJECTS = [
       en: 'A 1,200 sq ft ADU added to a residential lot on San Vicente. A small house with its own discipline — held against the main house, opening to its own slice of garden.',
       zh: '一座 1,200 平方英尺的 ADU，紧贴主屋而立。一座有自身秩序的小屋，开向自己的一片庭院。'
     },
+    description: {
+      en: 'At the heart of the Carthay Neighborhoods Historic District in Los Angeles, a 1920s garage has crouched in the rear yard for nearly a century. Local code permits no more than half of the existing structure to be demolished in a single intervention; the old box-like massing thus persists as an irreducible fact — at once a constraint and a point of departure.\n\nRather than being concealed, it is brought into focus. The original garage volume is retained on the ground floor; a second story emerges above as a similar volume — laid sideways, offset, gently pressing down — the two masses interlocking in a posture of mutual insertion. No attempt is made to blur the line between old and new, nor to deliberately distinguish them. White stucco and wood-toned openings set the rhythm, echoing the existing language of the main house at the front.',
+      zh: '场地位于洛杉矶卡萨（Carthay）历史保护区的中心，一座 1920 年代的车库蹲守后院近百年。法规约定，单次改建拆除不得超过现有结构的一半，旧屋的方盒子形体因此成为无法消融的存在。它既是限制，也是设计的起点。\n\n我们没有试图掩饰它，反而将其推向焦点。原车库的体量被保留在一层；新增的二层以另一相似体量出现，横放、错位、轻轻叠压其上，两个体块以穿插的姿态相互咬合。新旧之间不做模糊处理，亦不刻意区分。白色灰泥与木色门窗点出节奏，呼应前院主屋的现有语汇。历史在这里不是被复刻的符号，而是被尊重的形体。'
+    },
+    folder: 'san-vicente',
     cover: 'assets/projects/san-vicente/img_00_cover.png',
     images: [
       { src: 'assets/projects/san-vicente/img_01_render.png', tone: 'plaster', label: '01 · Rendering', aspect: '16/10' }
@@ -498,6 +513,21 @@ window.PROJECTS = [
       { src: 'assets/projects/san-vicente/dwg_01_plans.png', kind: 'plan', label: { en: 'Plans', zh: '平面' } },
       { src: 'assets/projects/san-vicente/dwg_02_elevations.jpg', kind: 'elevation', label: { en: 'Elevations', zh: '立面' } }
     ]
+  },
+  {
+    id: 'p17',
+    slug: 'chadron-adu',
+    folder: 'chadron',
+    title: { en: 'Chadron Multi-Unit ADU', zh: '查德龙街多单元附属住房' },
+    year: 2025,
+    location: { en: 'Gardena, CA', zh: '加州 加迪纳' },
+    type: 'residential',
+    track: 'professional',
+    area_sqft: null,
+    role: { en: 'Lead Designer', zh: '主创设计师' },
+    summary: { en: 'A multi-unit detached State ADU in Gardena.', zh: '加迪纳的一处多单元独立式附属住房。' },
+    images: [],
+    drawings: []
   }
 ];
 
@@ -527,33 +557,52 @@ window.PROJECT_TAXONOMY = {
 // CV
 window.CV_DATA = {
   name: 'Sylvie Zhang',
+  // 首页视频下面的那一段
+  intro: {
+    en: 'Architectural designer in Los Angeles. Much of my work has centered on the spaces between categories — where a neighborhood meets a market, a building meets its landscape, or one kind of use gives way to another.',
+    zh: '洛杉矶的建筑设计师。我的工作大多落在类别与类别之间——街区遇到市集，建筑遇到地形，一种用途让位给另一种用途的地方。'
+  },
+  location: { en: 'Los Angeles', zh: '洛杉矶' },
+  title: { en: 'Architectural designer', zh: '建筑设计师' },
+  // About 页的三条
+  principles: [
+    { title: { en: 'Context-driven design', zh: '从语境出发' }, text: { en: 'Working with site, code, budget, culture, and everyday use as active design materials rather than limitations.', zh: '把场地、法规、预算、文化与日常使用当作设计的材料，而不是限制。' } },
+    { title: { en: 'Buildable ideas', zh: '能建成的想法' }, text: { en: 'Balancing conceptual clarity with technical execution, documentation, coordination, and real-world constraints.', zh: '在概念的清晰与技术落地、图纸、协调和现实约束之间取得平衡。' } },
+    { title: { en: 'Architecture and daily life', zh: '建筑与日常' }, text: { en: 'Designing spaces that support how people move, gather, work, rest, and remember.', zh: '为人的行走、相聚、工作、休息与记忆而设计空间。' } }
+  ],
   bio: {
     en: 'Much of my work has centered on the spaces between categories — where a neighborhood meets a market, a building meets its landscape, or one kind of use gives way to another.\nI treat architecture less as a finished object than as a frame for how people actually live: the small, ordinary acts that give a place its texture. Across my work — a thesis that reworked the boundary between a commercial district and its residents into a shared market, a kindergarten that lets its walls dissolve into the surrounding forest, a campus building that organizes movement while echoing the material memory of the architecture around it — I keep returning to one question: how space is shaped by the people who use it, and how it shapes them back. Three years of practice in Los Angeles have grounded that instinct in real constraints; my focus now turns toward civic and public work, where everyday life carries the highest stakes.',
     zh: '涉川 (Sylvie)，洛杉矶建筑设计师，南加州大学建筑学院研究生毕业，关注人的日常生活和居住空间体验。'
   },
+  // 首页结尾的几段（来自简历开头的自我介绍）
+  closing: [
+    { label: { en: 'Practice', zh: '实践' }, text: { en: 'Architectural designer with three years of post-graduate practice in Los Angeles, leading residential and small commercial projects from schematic design through permit.', zh: '建筑设计师，研究生毕业后在洛杉矶执业三年，主持住宅与小型商业项目，从方案设计一直做到拿到许可。' } },
+    { label: { en: 'Experience', zh: '经验' }, text: { en: 'Hillside single-family houses, multi-family affordable housing, ADUs, and tenant improvement work, with prior exposure to large-scale commercial design in East Asia.', zh: '山地独栋住宅、多户可负担住房、ADU 与租户改造，此前参与过东亚的大型商业项目设计。' } }
+  ],
   education: [
-    { year: '2021–2023', school: { en: 'University of Southern California', zh: '南加州大学' }, degree: { en: 'M.Arch', zh: '建筑学硕士' } },
-    { year: '2015–2020', school: { en: 'Beijing University of Civil Engineering and Architecture', zh: '北京建筑大学' }, degree: { en: 'B.Arch', zh: '建筑学学士' } }
+    { year: '2021–2023', school: { en: 'University of Southern California', zh: '南加州大学' }, degree: { en: 'M.Arch', zh: '建筑学硕士' },
+      note: { en: 'Tau Sigma Delta Honor Society. USC School of Architecture Merit Scholarship, 2021–22 and 2022–23.', zh: 'Tau Sigma Delta 建筑荣誉学会。南加大建筑学院优秀奖学金（2021–22、2022–23）。' } },
+    { year: '2015–2020', school: { en: 'Beijing University of Civil Engineering and Architecture', zh: '北京建筑大学' }, degree: { en: 'B.Arch', zh: '建筑学学士' },
+      note: { en: 'Graduation Thesis of Distinction.', zh: '校级优秀毕业设计。' } }
   ],
   experience: [
-    { year: '2023.10–', firm: { en: 'Dotz Inc.', zh: 'Dotz Inc.' }, role: { en: 'Design Job Captain', zh: '设计负责人' } },
-    { year: '2022.', firm: { en: 'CallisonRTKL', zh: 'CallisonRTKL' }, role: { en: 'Intern', zh: '实习生' } },
-    { year: '2020.', firm: { en: 'Beijing Institute of Architectural Design', zh: '北京建筑设计研究院' }, role: { en: 'Intern', zh: '实习生' } }
+    { year: '2023.10–', firm: { en: 'Dotz Inc.', zh: 'Dotz Inc.' }, role: { en: 'Architectural Job Captain · Van Nuys, CA', zh: '建筑设计负责人 · 加州 Van Nuys' },
+      note: { en: 'Joined as one of the founding designers of the in-house design department. Established project workflows, drawing standards, and consultant coordination protocols from the ground up; grew the team\'s scope from ADUs to multi-family affordable housing and small commercial projects. Led 20+ projects concurrently from concept through permit.', zh: '作为公司内部设计部门的创始设计师之一加入，从零建立项目流程、制图标准与顾问协调机制；把团队的业务范围从 ADU 扩展到多户可负担住房和小型商业项目。同时主持 20 多个项目，从概念到拿到许可。' } },
+    { year: '2022.07–2022.10', firm: { en: 'CallisonRTKL Inc.', zh: 'CallisonRTKL Inc.' }, role: { en: 'Architectural Intern · Los Angeles, CA', zh: '建筑实习生 · 加州 洛杉矶' },
+      note: { en: 'Large-scale commercial and mixed-use concept design for projects in South Korea. Façade and interior design, 3D modeling, and analytical diagrams across SD and schematic phases.', zh: '参与韩国大型商业与综合体项目的概念设计：立面与室内设计、三维建模，以及方案阶段的分析图。' } },
+    { year: '2018.08–2018.12', firm: { en: 'Beijing Institute of Architectural Design', zh: '北京市建筑设计研究院' }, role: { en: 'Architectural Intern · Beijing', zh: '建筑实习生 · 北京' },
+      note: { en: 'Public projects including educational buildings, community facilities, and campus planning. Concept development, massing, plan and façade design, modeling, and renderings.', zh: '参与教育建筑、社区设施与校园规划等公共项目：概念深化、体量、平面与立面设计、建模与渲染。' } }
   ],
-  // Skills — 你来填具体内容
   skills: [
-    { group: { en: 'Design', zh: '设计' }, items: ['Rhino', 'Grasshopper', 'Revit', 'AutoCAD', 'SketchUp', 'Archicad'] },
-    { group: { en: 'Visualization', zh: '可视化' }, items: ['V-Ray', 'Enscape', 'Lumion'] },
-    { group: { en: 'Graphic', zh: '图形' }, items: ['Photoshop', 'Illustrator', 'InDesign'] },
-    { group: { en: 'Languages', zh: '语言' }, items: ['English', '中文'] },
-    { group: { en: 'Others', zh: '其他' }, items: ['Parametric design', 'Office Suite', '3D printing', 'Laser cutting', 'CNC'] }
-    
-    
+    { group: { en: 'BIM & Documentation', zh: 'BIM 与施工图' }, items: ['Revit (advanced, full CD sets)', 'AutoCAD', 'ArchiCAD'] },
+    { group: { en: 'Modeling & Parametric', zh: '建模与参数化' }, items: ['Rhino', 'Grasshopper', 'SketchUp'] },
+    { group: { en: 'Visualization', zh: '可视化' }, items: ['Enscape', 'Lumion', 'Photoshop', 'Illustrator', 'InDesign'] },
+    { group: { en: 'Coordination', zh: '协调' }, items: ['LADBS entitlements & plan check', 'Consultant management'] }
   ],
   awards: [
-    { year: 2024, en: 'USC Thesis Honors', zh: 'USC 毕业设计荣誉奖' },
-    { year: 2023, en: 'Studio Award, USC', zh: 'USC 设计课优胜奖' },
-    { year: 2022, en: 'Travel Fellowship', zh: '旅行学者基金' }
+    { year: 2023, en: 'Tau Sigma Delta Honor Society for Architecture, USC', zh: 'Tau Sigma Delta 建筑荣誉学会，南加州大学' },
+    { year: 2020, en: 'TEAM20 Architecture & Urban Planning Competition, Honor Selection', zh: 'TEAM20 两岸建筑与规划新人奖，入围' },
+    { year: 2018, en: 'Beijing Student Structural Design Competition, First Prize', zh: '北京市大学生建筑结构设计竞赛，一等奖' }
   ],
   contact: {
     email: 'szhang52@alumni.usc.edu',
