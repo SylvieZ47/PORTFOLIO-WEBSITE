@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 """生成网站。用法：  python build.py
-读 data/projects.js 和 assets/ 里的图片，把整站写进 docs/（英文在 docs/，中文在 docs/zh/）。
+读 data/projects.js 和 assets/ 里的图片，把整站直接写在这个文件夹里（英文在根目录，中文在 zh/，图片在 img/）。
+推到 GitHub 的 main 之后，线上的网站就是这些文件。
 加项目 = 在 data/projects.js 加一条；加图 = 把文件放进 assets/projects/<folder>/，然后重新运行。
 需要：Python + Pillow，Node（只用来读 projects.js）。"""
 import html, json, os, re, shutil, subprocess, sys
@@ -9,7 +10,7 @@ from PIL import Image
 Image.MAX_IMAGE_PIXELS = None
 ROOT = os.path.dirname(os.path.abspath(__file__))
 os.chdir(ROOT)
-OUT = 'docs'
+OUT = '.'
 HERO_PROJECT = 'the-ark'          # 首页第一屏用哪个项目的封面（放了 assets/home.mp4 就改用视频）
 HERO_VIDEO = 'assets/home.mp4'
 IMG_EXT = ('.jpg', '.jpeg', '.png', '.webp')
