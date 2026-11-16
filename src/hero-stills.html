@@ -1,0 +1,26 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Hero stills</title>
+<style>
+  body { margin: 0; padding: 24px; background: #fff; font: 13px/1.4 "Helvetica Neue", Arial, sans-serif; color: #111; }
+  .f { margin: 0 0 40px; }
+  canvas { display: block; width: 100%; aspect-ratio: 16 / 9; border: 1px solid #e4e4e4; }
+  .f p { margin: 8px 0 0; color: #8a8a8a; }
+</style>
+<div id="g"></div>
+<script type="module">
+  import { createHero } from '/src/hero.js';
+  const stages = [[0.22, '2 · Points'], [0.42, '3 · Cells draw'], [0.62, '4 · Becomes 3D'], [0.77, '5 · Fly in'], [0.97, '6 · Inside']];
+  const q = new URLSearchParams(location.search), only = q.get('only'), p = q.get('p');
+  const list = p ? [[+p, 'p = ' + p]] : only ? [stages[+only]] : stages;
+  window.heroes = [];
+  for (const [prog, label] of list) {
+    const f = document.createElement('div'); f.className = 'f';
+    const c = document.createElement('canvas'); f.appendChild(c);
+    const t = document.createElement('p'); t.textContent = label + '  (scroll ' + prog + ')'; f.appendChild(t);
+    document.getElementById('g').appendChild(f);
+    const h = createHero(c, { still: true, mobile: q.has('mobile') });
+    h.setProgress(prog); h.render(); window.heroes.push(h);
+  }
+  window.heroInfo = window.heroes[0].info;
+</script>
