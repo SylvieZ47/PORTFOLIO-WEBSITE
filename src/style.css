@@ -85,13 +85,15 @@ h1, h2 { font: inherit; margin: 0; }
 .mark:nth-child(6n+4) { grid-column: 9 / 11; margin-top: -9vh; }
 .mark:nth-child(6n+5) { grid-column: 3 / 5; margin-top: 11vh; }
 .mark:nth-child(6n+6) { grid-column: 6 / 10; margin-top: -2vh; }
-/* 逐个项目精调：--z 放大缩小，left / margin-top 挪位置 */
-.mark[href$="beck-corner-apartment.html"] { margin-top: 30vh; }
-.mark[href$="westfall-hillside-house.html"] { --z: 1.15; left: -10vw; }
+/* 位置精调（跟着位置走，不跟项目走；哪个项目在第几个由 build.py 的 HOME_ORDER 决定） */
+.mark:nth-child(1) { margin-top: 30vh; }
+.mark:nth-child(2) { left: -10vw; top: -10vw; }
+.mark:nth-child(5) { left: 6.6vw; top: -8vh; }
+.mark:nth-child(6) { left: 11.7vw; top: -8.7vh; }
+/* 大小精调（跟着项目走） */
+.mark[href$="westfall-hillside-house.html"] { --z: 1.15; }
 .mark[href$="downstairs-bazaar.html"] { --z: .85; }
 .mark[href$="river-lantern.html"] { --z: 1.1; }
-.mark[href$="the-ark.html"] { left: 6.6vw; top: -8vh; }
-.mark[href$="ashton-house-remodel.html"] { left: 11.7vw; top: -8.7vh; }
 .field.has-hover .mark { opacity: .08; }
 .field.has-hover .mark.on { opacity: 0; }
 .reveal {

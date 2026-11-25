@@ -13,6 +13,9 @@ os.chdir(ROOT)
 OUT = '.'
 HERO_PROJECT = 'the-ark'          # 首页第一屏用哪个项目的封面（放了 assets/home.mp4 就改用视频）
 HERO_VIDEO = 'assets/home.mp4'
+# 首页散点的排列顺序（只管首页；没列的项目排在后面）。第几个就落在第几个位置
+HOME_ORDER = ['798-artist-district', 'downstairs-bazaar', 'seedlings', 'river-lantern', 'westfall-hillside-house',
+              'the-ark', 'ashton-house-remodel', 'pku-marxism-school-building', 'beck-corner-apartment']
 IMG_EXT = ('.jpg', '.jpeg', '.png', '.webp')
 
 # ── 读数据 ──────────────────────────────────────────────
@@ -180,7 +183,8 @@ def home(lang):
     else:
         hero = f'<section class="hero">\n  <div class="frame">{img_tag(hp["_cover"], r, lazy=False)}</div>\n  <div class="grid cap">{cap}{intro}</div>\n</section>'
     marks = []
-    for p in PROJECTS:
+    rank = lambda p: HOME_ORDER.index(p['slug']) if p['slug'] in HOME_ORDER else len(HOME_ORDER)
+    for p in sorted(PROJECTS, key=rank):
         if not p['_any']: continue
         d = p['_icon'] or (p['_dwgs'][0]['a'] if p['_dwgs'] else p['_cover'])
         rv = p['_index'] or p['_cover'] or d
