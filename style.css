@@ -207,6 +207,12 @@ h1, h2 { font: inherit; margin: 0; }
   .xh.wide { --l: 300vmax; }
 }
 
+/* ── 图标悬停微放大：提示可交互，只放大图本身，不挤动布局 ── */
+@media (hover: hover) and (pointer: fine) {
+  .mark .d { transition: transform .2s ease-out; }
+  .mark:hover .d { transform: scale(1.05); }
+}
+
 /* ── 手机 ── */
 @media (max-width: 800px) {
   :root { --m: 16px; --g: 12px; --top: 64px; }
