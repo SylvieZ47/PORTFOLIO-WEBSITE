@@ -122,6 +122,12 @@ for p in PROJECTS:
     p['_any'] = bool(p['_cover'] or imgs or dwgs)
 
 def year_of(p): return p.get('year_range') or str(p['year'])
+def region_of(p, lang):
+    loc = T(p.get('location'), 'en')
+    if loc.endswith(', CA'): return 'CA' if lang == 'en' else '加州'
+    if 'Beijing' in loc or 'China' in loc: return 'China' if lang == 'en' else '中国'
+    if loc == 'Korea': return 'Korea' if lang == 'en' else '韩国'
+    return T(p.get('location'), lang)
 def type_label(p, lang): return T(next((o['label'] for o in TAX['type']['options'] if o['id'] == p['type']), ''), lang)
 def track_label(p, lang): return T(next((o['label'] for o in TAX['track']['options'] if o['id'] == p['track']), ''), lang)
 def area(p, lang):
@@ -221,9 +227,8 @@ def work(lang):
     for p in sorted(PROJECTS, key=lambda p: -p['year']):
         role = T(p['role'], lang)
         status = ', '.join(T(a, lang) for a in p.get('awards', []))
-        soon = '' if p['_any'] else f' <span class="mute">({S("soon_short", lang)})</span>'
-        rows.append(f'      <tr><td>{year_of(p)}</td><td><a class="u" href="{p["slug"]}.html">{E(T(p["title"], lang))}</a>{soon}</td>'
-                    f'<td>{E(", ".join(x for x in (type_label(p, lang), T(p.get("location"), lang)) if x))}</td><td>{E(role)}</td><td>{E(status)}</td></tr>')
+        rows.append(f'      <tr><td>{p["year"]}</td><td><a class="u" href="{p["slug"]}.html">{E(T(p["title"], lang))}</a></td>'
+                    f'<td>{E(", ".join(x for x in (type_label(p, lang), region_of(p, lang)) if x))}</td><td>{E(role)}</td><td>{E(status)}</td></tr>')
     figs = []
     for p in PROJECTS:
         a = p['_cover']
