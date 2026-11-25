@@ -127,7 +127,7 @@ def region_of(p, lang):
     if loc.endswith(', CA'): return 'CA' if lang == 'en' else '加州'
     if 'Beijing' in loc or 'China' in loc: return 'China' if lang == 'en' else '中国'
     if loc == 'Korea': return 'Korea' if lang == 'en' else '韩国'
-    return T(p.get('location'), lang)
+    return ''
 def type_label(p, lang): return T(next((o['label'] for o in TAX['type']['options'] if o['id'] == p['type']), ''), lang)
 def track_label(p, lang): return T(next((o['label'] for o in TAX['track']['options'] if o['id'] == p['track']), ''), lang)
 def area(p, lang):
