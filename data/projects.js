@@ -576,8 +576,7 @@ window.CV_DATA = {
   },
   // 首页结尾的几段（来自简历开头的自我介绍）
   closing: [
-    { label: { en: 'Practice', zh: '实践' }, text: { en: 'Architectural designer with three years of post-graduate practice in Los Angeles, leading residential and small commercial projects from schematic design through permit.', zh: '建筑设计师，研究生毕业后在洛杉矶执业三年，主持住宅与小型商业项目，从方案设计一直做到拿到许可。' } },
-    { label: { en: 'Experience', zh: '经验' }, text: { en: 'Hillside single-family houses, multi-family affordable housing, ADUs, and tenant improvement work, with prior exposure to large-scale commercial design in East Asia.', zh: '山地独栋住宅、多户可负担住房、ADU 与租户改造，此前参与过东亚的大型商业项目设计。' } }
+    { label: { en: 'Practice', zh: '实践' }, text: { en: 'Architectural designer with three years of post-graduate practice in Los Angeles, leading residential and small commercial projects from schematic design through permit.', zh: '建筑设计师，研究生毕业后在洛杉矶执业三年，主持住宅与小型商业项目，从方案设计一直做到拿到许可。' } }
   ],
   education: [
     { year: '2021–2023', school: { en: 'University of Southern California', zh: '南加州大学' }, degree: { en: 'M.Arch', zh: '建筑学硕士' },

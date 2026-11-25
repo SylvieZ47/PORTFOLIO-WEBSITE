@@ -154,7 +154,7 @@ def shell(lang, page, title, body, desc=''):
 
 def foot(lang, left=None):
     """每页最下面的一排三个元素：左下角、正文起始线、右下角。"""
-    left = left or 'Sylvie (Siqi) Zhang'
+    left = 'Sylvie (Siqi) Zhang' if left is None else left
     mail = E(CV["contact"]["email"])
     return f'<footer class="grid foot caps">\n  <span>{left}</span>\n  <a class="u" href="mailto:{mail}">{mail}</a>\n  <span>2026</span>\n</footer>\n'
 
@@ -186,7 +186,7 @@ def home(lang):
              f'<a class="u" href="https://{E(c["linkedin"])}">LinkedIn</a><br>'
              f'<a class="u" href="work.html">{S("all_projects", lang)}</a>')
     rows += f'<div class="r"><h2 class="caps">{"Contact" if lang == "en" else "联系"}</h2><p>{links}</p></div>'
-    seal = f'<img class="seal" src="{r}img/sig-l.png" alt="Sylvie (Siqi) Zhang">'
+    rows += f'<div class="r"><img class="seal" src="{r}img/sig-l.png" alt="Sylvie (Siqi) Zhang"></div>'
     body = f"""{hero}
 
 <section class="field">
@@ -198,7 +198,7 @@ def home(lang):
 {rows}
 </section>
 
-{foot(lang, seal)}"""
+{foot(lang, '')}"""
     return shell(lang, 'index.html', '', body)
 
 # ── Work ───────────────────────────────────────────────
