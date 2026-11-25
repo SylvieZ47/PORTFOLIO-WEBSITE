@@ -13,6 +13,7 @@
 //   track         'professional' | 'academic' | 'research'
 //   area_sqft     数字（真值始终用 sq ft，中文页面自动换算成 ㎡），可为 null
 //   role          {en, zh}
+//   status        可选 {en, zh}  Work 页表格状态列（建成情况）
 //   summary       {en, zh}  一两句话，用于卡片预览与项目页顶
 //   description   {en, zh}  长描述，可选，用于项目页正文段落
 //   cover         可选 URL — 用于 cinematic scroll 大封面与 project 页顶部
@@ -49,6 +50,7 @@ window.PROJECTS = [
     track: 'professional',
     area_sqft: 11500,
     role: { en: 'Lead Designer', zh: '主创设计师' },
+    status: { en: 'Unbuilt', zh: '尚未建成' },
     summary: {
       en: 'A 100% affordable housing project on a tight R3[Q] lot in North Hollywood — 20 units delivered through L.A.\'s CHIP program, given character by the leap of materials and the transitions of color.',
       zh: '借助洛杉矶 CHIP 项目，在一块基础密度仅为 6 的紧凑地块上做出 100% 可负担住房——20 套居住单元，靠材料与色彩之间的过渡获得"性格"，而非滑向千篇一律的命运。'
@@ -83,6 +85,7 @@ window.PROJECTS = [
     track: 'professional',
     area_sqft: 3200,
     role: { en: 'Lead Designer', zh: '主创设计师' },
+    status: { en: 'Unbuilt', zh: '尚未建成' },
     summary: {
       en: 'A house carved into the steep southern slope of the San Fernando Valley. Through SB9 and a careful reading of "basement," the buildable area nearly doubled — the terrain became the author.',
       zh: '一座切入圣费尔南多谷南坡的山地住宅。利用 SB9 与"地下室"的定义，可用面积近乎翻倍——地形不只是制约，更成了作者。'
@@ -286,6 +289,7 @@ window.PROJECTS = [
     track: 'professional',
     area_sqft: 85300,
     role: { en: 'Design Assistant', zh: '设计助理' },
+    status: { en: 'Built', zh: '已建成' },
     summary: {
       en: 'A teaching building at Peking University, abstracting the brick language of the historic Red Building. A 24-hour academic environment of cascading terraces, reading platforms, and lecture halls.',
       zh: '北京大学马克思主义学院的教学楼，抽象并重新诠释红楼的砖砌立面。室内外层叠的露台、阅读平台与讲堂，组成一个全天候、鼓励自发交流的学术场所。'
@@ -497,6 +501,7 @@ window.PROJECTS = [
     track: 'professional',
     area_sqft: 1200,
     role: { en: 'Lead Designer', zh: '主创设计师' },
+    status: { en: 'Under Construction', zh: '在建' },
     summary: {
       en: 'A 1,200 sq ft ADU added to a residential lot on San Vicente. A small house with its own discipline — held against the main house, opening to its own slice of garden.',
       zh: '一座 1,200 平方英尺的 ADU，紧贴主屋而立。一座有自身秩序的小屋，开向自己的一片庭院。'
@@ -526,6 +531,7 @@ window.PROJECTS = [
     track: 'professional',
     area_sqft: null,
     role: { en: 'Lead Designer', zh: '主创设计师' },
+    status: { en: 'Unbuilt', zh: '尚未建成' },
     summary: { en: 'A multi-unit detached State ADU in Gardena.', zh: '加迪纳的一处多单元独立式附属住房。' },
     images: [],
     drawings: []

@@ -226,7 +226,7 @@ def work(lang):
     rows = []
     for p in sorted(PROJECTS, key=lambda p: -p['year']):
         role = T(p['role'], lang)
-        status = ', '.join(T(a, lang) for a in p.get('awards', []))
+        status = ', '.join(T(a, lang) for a in ([p['status']] if p.get('status') else []) + p.get('awards', []))
         rows.append(f'      <tr><td>{p["year"]}</td><td><a class="u" href="{p["slug"]}.html">{E(T(p["title"], lang))}</a></td>'
                     f'<td>{E(", ".join(x for x in (type_label(p, lang), region_of(p, lang)) if x))}</td><td>{E(role)}</td><td>{E(status)}</td></tr>')
     figs = []
