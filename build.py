@@ -186,7 +186,7 @@ def home(lang):
              f'<a class="u" href="https://{E(c["linkedin"])}">LinkedIn</a><br>'
              f'<a class="u" href="work.html">{S("all_projects", lang)}</a>')
     rows += f'<div class="r"><h2 class="caps">{"Contact" if lang == "en" else "联系"}</h2><p>{links}</p></div>'
-    rows += f'<div class="r"><img class="seal" src="{r}img/sig-l.png" alt="Sylvie (Siqi) Zhang"></div>'
+    rows += f'<div class="r pic"><img class="seal" src="{r}img/sig-c.png" alt="Sylvie (Siqi) Zhang"></div>'
     body = f"""{hero}
 
 <section class="field">
@@ -361,6 +361,8 @@ os.makedirs(f'{OUT}/img', exist_ok=True)
 for name, src, size in (('sig-s.png', 'assets/portrait-sketch.png', 256), ('sig-l.png', 'assets/portrait-black.png', 512)):
     with Image.open(src) as im:
         im.thumbnail((size, size)); im.save(f'{OUT}/img/{name}')
+with Image.open('assets/portrait-black.png') as im:   # 首页结尾右栏的头像：裁掉透明边，好和文字上下对齐
+    im = im.crop(im.split()[-1].getbbox()); im.thumbnail((600, 600)); im.save(f'{OUT}/img/sig-c.png')
 shutil.copyfile('src/style.css', f'{OUT}/style.css')
 shutil.copyfile('src/site.js', f'{OUT}/site.js')
 if os.path.isfile('assets/cv.pdf'): shutil.copyfile('assets/cv.pdf', f'{OUT}/cv.pdf')

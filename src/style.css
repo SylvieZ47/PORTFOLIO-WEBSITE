@@ -97,7 +97,8 @@ h1, h2 { font: inherit; margin: 0; }
 .foot > :nth-child(1) { grid-column: 1 / 6; }
 .foot > :nth-child(2) { grid-column: 4 / 10; justify-self: center; }
 .foot > :nth-child(3) { grid-column: 11 / 13; justify-self: end; }
-.closing .seal { display: block; width: 104px; margin: -6px 0 0 -6px; }
+.closing .pic { align-self: stretch; position: relative; }
+.closing .seal { position: absolute; left: 0; top: 5px; bottom: 7px; height: calc(100% - 12px); width: auto; }
 .pager { padding-top: 24px; padding-bottom: 9vh; }
 .pager > :first-child { grid-column: 1 / 6; justify-self: start; }
 .pager > :last-child { grid-column: 6 / 13; justify-self: end; }
@@ -205,7 +206,8 @@ h1, h2 { font: inherit; margin: 0; }
   .closing { padding-top: 96px; padding-bottom: 40px; row-gap: 36px; }
   .about { padding-bottom: 72px; }
   .foot, .pager { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; }
-  .closing .seal { width: 72px; }
+  .closing .pic { align-self: auto; }
+  .closing .seal { position: static; height: auto; width: 96px; }
   .big h1 { font-size: 22vw; }
   .top nav { gap: 14px; font-size: 11px; }
   .head { padding-top: 48px; padding-bottom: 32px; row-gap: 24px; }
