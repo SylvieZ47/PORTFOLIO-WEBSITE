@@ -65,7 +65,7 @@ h1, h2 { font: inherit; margin: 0; }
   position: relative; margin-top: 32vh; padding: 0 var(--m);
   display: grid; grid-template-columns: repeat(12, 1fr);
   column-gap: var(--g); row-gap: 18vh; align-items: start;
-  --k: 15vw;   /* 每张小图的面积统一 = k²；--s 是 build.py 按比例算的 √(宽/高) */
+  --k: 17vw;   /* 每张小图的面积统一 = k²；--s 是 build.py 按比例算的 √(宽/高) */
 }
 .mark { display: block; justify-self: center; width: calc(var(--k) * var(--s, 1)); transition: opacity .3s; }
 .mark .d { mix-blend-mode: multiply; }
