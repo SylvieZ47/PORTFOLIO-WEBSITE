@@ -90,6 +90,8 @@ h1, h2 { font: inherit; margin: 0; }
 .mark[href$="westfall-hillside-house.html"] { --z: 1.15; left: -10vw; }
 .mark[href$="downstairs-bazaar.html"] { --z: .85; }
 .mark[href$="river-lantern.html"] { --z: 1.1; }
+.mark[href$="the-ark.html"] { left: 6.6vw; top: -8vh; }
+.mark[href$="ashton-house-remodel.html"] { left: 11.7vw; top: -8.7vh; }
 .field.has-hover .mark { opacity: .08; }
 .field.has-hover .mark.on { opacity: 0; }
 .reveal {
@@ -214,7 +216,7 @@ h1, h2 { font: inherit; margin: 0; }
   .hero-scroll .hero { position: static; }
   .hero .frame { flex: none; aspect-ratio: 4 / 5; }
   .field { margin-top: 72px; grid-template-columns: 1fr 1fr; row-gap: 40px; align-items: end; }
-  .field .mark { grid-column: auto !important; margin-top: 0 !important; left: 0 !important; width: min(100%, calc(30vw * var(--s, 1) * var(--z, 1))); }
+  .field .mark { grid-column: auto !important; margin-top: 0 !important; left: 0 !important; top: 0 !important; width: min(100%, calc(30vw * var(--s, 1) * var(--z, 1))); }
   .mark .mob { display: block; padding-top: 8px; }
   .reveal { display: none; }
   .closing { padding-top: 96px; padding-bottom: 40px; row-gap: 36px; }
