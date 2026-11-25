@@ -39,18 +39,20 @@ h1, h2 { font: inherit; margin: 0; }
 }
 
 /* ── 顶栏：左上角头像+名字，右上角语言，撑住骨架 ── */
-/* 顶栏本身透明，图滚到下面不被截断；只给中间三个标签垫一块白色圆角底，名字和 CN 用白色光晕保证压在图上也看得清 */
+/* 顶栏本身透明，图滚到下面不被截断；中间三个标签垫一块白色圆角底 */
 .top { height: var(--top); align-items: center; position: sticky; top: 0; z-index: 5; pointer-events: none; }
 .top a { pointer-events: auto; }
 .top .name { grid-column: 1 / 6; justify-self: start; font-weight: 500; font-size: 18px; display: flex; align-items: center; gap: 12px;
-  text-shadow: 0 0 4px #fff, 0 0 10px #fff, 0 0 16px #fff; }
-.top .sig { width: 40px; height: 40px; filter: drop-shadow(0 0 3px #fff) drop-shadow(0 0 6px #fff); }
+  margin-left: -12px; padding: 4px 14px 4px 12px; border-radius: 999px; }
+.top .sig { width: 40px; height: 40px; }
+/* 名字和 CN 也垫同样的白底，但不加阴影：白底上看不出来，压到图上才显出来 */
+.top .name, .top nav .lang { background: rgba(255, 255, 255, .86); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
 .top nav { grid-column: 6 / 13; display: flex; gap: 30px; align-items: center; text-transform: uppercase; font-size: 12px; letter-spacing: .09em; }
 .top nav .tabs { display: flex; gap: 30px; margin-left: -20px; padding: 9px 20px 8px; border-radius: 999px;
   background: rgba(255, 255, 255, .86); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
   box-shadow: 0 1px 14px rgba(0, 0, 0, .06); }
 .top nav .on { font-weight: 600; }
-.top nav .lang { margin-left: auto; color: var(--faint); text-shadow: 0 0 4px #fff, 0 0 10px #fff; }
+.top nav .lang { margin-left: auto; margin-right: -12px; padding: 8px 12px 7px; border-radius: 999px; color: var(--faint); }
 
 /* ── 首页第一屏：视频位 + 简介，正好一屏 ── */
 .hero {
@@ -218,6 +220,7 @@ h1, h2 { font: inherit; margin: 0; }
   .big h1 { font-size: 22vw; }
   .top nav { gap: 14px; font-size: 11px; }
   .top nav .tabs { gap: 14px; margin-left: 0; padding: 7px 14px 6px; }
+  .top nav .lang { margin-right: -8px; padding: 7px 8px 6px; }
   .head { padding-top: 48px; padding-bottom: 32px; row-gap: 24px; }
   .lead { font-size: 19px; }
   .index table { width: 100%; margin-left: 0; }
