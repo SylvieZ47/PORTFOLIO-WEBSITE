@@ -41,12 +41,21 @@ def E(s): return html.escape(str(s), quote=True)
 
 # ── 图片：缩到网页尺寸，写进 docs/img/，记下比例 ─────────────
 _cache = {}
+def trim(im, pad=0.03):
+    im = im.convert('RGBA')
+    box = im.getchannel('A').point(lambda v: 255 if v > 20 else 0).getbbox()
+    if not box: return im
+    p = round(pad * max(box[2] - box[0], box[3] - box[1]))
+    return im.crop((max(0, box[0] - p), max(0, box[1] - p), min(im.width, box[2] + p), min(im.height, box[3] + p)))
+
 def asset(src):
     """src 是 assets/ 下的路径。返回 {full, small, w, h, fw, sw, ar}；文件不存在返回 None。"""
     if not src or not src.startswith('assets/') or not os.path.isfile(src): return None
     if src in _cache: return _cache[src]
     rel = os.path.splitext(src[len('assets/'):])[0].replace('projects/', '')
     with Image.open(src) as im:
+        if re.match(r'icon(_\d+)?\.', os.path.basename(src)):   # 手绘图标：裁掉透明边，只留画面＋一圈等宽留白，首页才能按画面统一大小
+            im = trim(im)
         w, h = im.size
         res = {'ar': w / h, 'w': w, 'h': h}
         for key, box in (('full', (2600, 2200)), ('small', (1100, 1000))):
@@ -176,7 +185,7 @@ def home(lang):
         d = p['_icon'] or (p['_dwgs'][0]['a'] if p['_dwgs'] else p['_cover'])
         rv = p['_index'] or p['_cover'] or d
         title = E(T(p['title'], lang))
-        marks.append(f'  <a class="mark{" tall" if d["ar"] < 0.9 else ""}" href="{p["slug"]}.html" data-img="{r}{rv["full"]}" '
+        marks.append(f'  <a class="mark" style="--s:{d["ar"] ** 0.5:.3f}" href="{p["slug"]}.html" data-img="{r}{rv["full"]}" '
                      f'data-ar="{rv["ar"]:.4f}" data-title="{title}" data-year="{year_of(p)}">'
                      f'<img class="d" src="{r}{d["small"]}" width="{d["w"]}" height="{d["h"]}" alt="{title}" loading="lazy">'
                      f'<span class="mob">{title}</span></a>')
