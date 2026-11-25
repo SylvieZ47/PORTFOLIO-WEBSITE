@@ -95,6 +95,7 @@ h1, h2 { font: inherit; margin: 0; }
 .mark[href$="westfall-hillside-house.html"] { --z: 1.15; }
 .mark[href$="downstairs-bazaar.html"] { --z: .85; }
 .mark[href$="river-lantern.html"] { --z: 1.1; }
+.mark[href$="seedlings.html"] { --z: 1.011; top: -.37vw; }   /* 补了树冠顶后图变高，保持原大小和位置 */
 .field.has-hover .mark { opacity: .08; }
 .field.has-hover .mark.on { opacity: 0; }
 .reveal {
