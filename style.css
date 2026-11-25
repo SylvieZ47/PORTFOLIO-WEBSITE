@@ -218,9 +218,10 @@ h1, h2 { font: inherit; margin: 0; }
   .closing .pic { align-self: auto; }
   .closing .seal { position: static; height: auto; width: 96px; }
   .big h1 { font-size: 22vw; }
-  .top nav { gap: 14px; font-size: 11px; }
-  .top nav .tabs { gap: 14px; margin-left: 0; padding: 7px 14px 6px; }
-  .top nav .lang { margin-right: -8px; padding: 7px 8px 6px; }
+  .top nav { gap: 8px; font-size: 11px; }
+  .top nav .tabs { gap: 12px; margin-left: 0; padding: 7px 11px 6px; }
+  .top nav .lang { margin-right: -6px; padding: 7px 6px 6px; }
+  .top .name { margin-left: -8px; padding: 3px 9px 3px 8px; gap: 8px; }
   .head { padding-top: 48px; padding-bottom: 32px; row-gap: 24px; }
   .lead { font-size: 19px; }
   .index table { width: 100%; margin-left: 0; }
