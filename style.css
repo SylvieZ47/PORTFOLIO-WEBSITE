@@ -21,6 +21,14 @@ body {
   font: 400 15px/1.5 "Instrument Sans", "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif;
   -webkit-font-smoothing: antialiased;
 }
+/* 预览：很淡的网格绘图本底 */
+body {
+  --gl: rgba(150, 135, 115, .09); --gL: rgba(150, 135, 115, .16);
+  background-image:
+    linear-gradient(var(--gL) 1px, transparent 1px), linear-gradient(90deg, var(--gL) 1px, transparent 1px),
+    linear-gradient(var(--gl) 1px, transparent 1px), linear-gradient(90deg, var(--gl) 1px, transparent 1px);
+  background-size: 90px 90px, 90px 90px, 18px 18px, 18px 18px;
+}
 a { color: inherit; text-decoration: none; }
 a:hover { color: var(--mute); }
 /* 链接悬停：一条细线从左画出来 */
