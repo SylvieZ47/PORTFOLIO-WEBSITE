@@ -219,10 +219,11 @@ def work(lang):
     r = '' if lang == 'en' else '../'
     rows = []
     for p in sorted(PROJECTS, key=lambda p: -p['year']):
-        role = T(p['role'], lang) + ''.join(', ' + T(a, lang) for a in p.get('awards', []))
+        role = T(p['role'], lang)
+        status = ', '.join(T(a, lang) for a in p.get('awards', []))
         soon = '' if p['_any'] else f' <span class="mute">({S("soon_short", lang)})</span>'
         rows.append(f'      <tr><td>{year_of(p)}</td><td><a class="u" href="{p["slug"]}.html">{E(T(p["title"], lang))}</a>{soon}</td>'
-                    f'<td>{E(", ".join(x for x in (type_label(p, lang), T(p.get("location"), lang)) if x))}</td><td>{E(role)}</td></tr>')
+                    f'<td>{E(", ".join(x for x in (type_label(p, lang), T(p.get("location"), lang)) if x))}</td><td>{E(role)}</td><td>{E(status)}</td></tr>')
     figs = []
     for p in PROJECTS:
         a = p['_cover']
