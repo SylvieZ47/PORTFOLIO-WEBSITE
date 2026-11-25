@@ -250,9 +250,9 @@ h1, h2 { font: inherit; margin: 0; }
   .stagger .text { padding-bottom: 0; }
   .index summary { gap: 14px; }
   .index td:nth-child(3) { display: none; }
-  .index td:first-child { width: 16%; }
-  .index td:nth-child(2) { width: 40%; }
+  .index td:first-child { width: 13%; }
+  .index td:nth-child(2) { width: 38%; }
   .index td:nth-child(4) { width: auto; }
-  .index td:last-child { width: 16%; }
+  .index td:last-child { width: 24%; }
   .list { row-gap: 12px; }
 }
