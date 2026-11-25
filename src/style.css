@@ -91,6 +91,9 @@ h1, h2 { font: inherit; margin: 0; }
 .mark:nth-child(4) { left: -3vw; top: -6vh; }
 .mark:nth-child(5) { left: 6.6vw; top: -8vh; }
 .mark:nth-child(6) { left: 11.7vw; top: -8.7vh; }
+.mark:nth-child(7) { margin-top: -8vh; }
+.mark:nth-child(8) { margin-top: -7vh; }
+.mark:nth-child(9) { margin-top: -3vh; }
 /* 大小精调（跟着项目走） */
 .mark[href$="westfall-hillside-house.html"] { --z: 1.15; }
 .mark[href$="downstairs-bazaar.html"] { --z: .935; }
@@ -105,7 +108,7 @@ h1, h2 { font: inherit; margin: 0; }
 .reveal div { display: flex; justify-content: space-between; padding-top: 10px; }
 
 /* ── 首页结尾：三段并排，大大方方摆在主体区里（第 3–5、6–8、9–10 栏） ── */
-.closing { padding-top: 38vh; padding-bottom: 64px; align-items: start; }
+.closing { padding-top: 24vh; padding-bottom: 64px; align-items: start; }
 .closing .r:nth-child(1) { grid-column: 3 / 6; }
 .closing .r:nth-child(2) { grid-column: 7 / 10; }
 .closing .r:nth-child(3) { grid-column: 10 / 12; }
