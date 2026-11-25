@@ -91,7 +91,7 @@ for p in PROJECTS:
     p['_cover'] = asset(p.get('cover')) or asset(find(r'^img_00_cover|_cover\.'))
     cover_src = p.get('cover') if asset(p.get('cover')) else find(r'^img_00_cover|_cover\.')
     p['_index'] = asset(p.get('indexCover')) or asset(find(r'index-cover'))
-    p['_icon'] = asset(find(r'^icon\.'))
+    p['_icon'] = asset(find(r'^icon(_\d+)?\.'))
     listed = {x.get('src') for x in p.get('images', []) + p.get('drawings', [])} | {p.get('cover'), p.get('indexCover')}
     imgs, dwgs = [], []
     for x in p.get('images', []):
@@ -102,7 +102,7 @@ for p in PROJECTS:
         if a: dwgs.append({'a': a, 'cap': x.get('label'), 'kind': 'dwg'})
     for f in files:                                      # 文件夹里有、数据里没列的
         src = f'{folder}/{f}'
-        if src in listed or src == cover_src or 'index-cover' in f or f.startswith('icon.'): continue
+        if src in listed or src == cover_src or 'index-cover' in f or re.match(r'icon(_\d+)?\.', f): continue
         if f.startswith('dwg_'): dwgs.append({'a': asset(src), 'cap': nice_label(f), 'kind': 'dwg'})
         elif f.startswith('img_'): imgs.append({'a': asset(src), 'cap': nice_label(f), 'kind': 'img'})
     p['_imgs'], p['_dwgs'] = imgs, dwgs
