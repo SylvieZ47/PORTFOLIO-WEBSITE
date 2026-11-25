@@ -332,6 +332,7 @@ window.PROJECTS = [
       { src: 'assets/projects/river-lantern/img_08_laundry.jpg', tone: 'mist-light', label: '08 · Laundry', aspect: '4/5' }
     ],
     cover: 'assets/projects/river-lantern/img_01_lanterns.jpg',
+    indexCover: 'assets/projects/river-lantern/img_03_model-scene.jpg',
     drawings: [
       { src: 'assets/projects/river-lantern/dwg_plan-model.jpg', kind: 'plan', label: { en: 'Plan / model', zh: '平面 · 模型' } },
       { src: 'assets/projects/river-lantern/dwg_toilet-shower-section.jpg', kind: 'section', label: { en: 'Toilet & shower section', zh: '厕所淋浴剖面' } },
