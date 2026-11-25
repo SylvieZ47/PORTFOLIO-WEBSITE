@@ -91,8 +91,8 @@ h1, h2 { font: inherit; margin: 0; }
 .mark:nth-child(4) { left: -3vw; top: -6vh; }
 .mark:nth-child(5) { left: 6.6vw; top: -8vh; }
 .mark:nth-child(6) { left: 11.7vw; top: -8.7vh; }
-.mark:nth-child(8) { left: -12vw; top: -28.7vw; }   /* 第 5–9 个别围成一圈 */
-.mark:nth-child(9) { left: 17.5vw; margin-top: calc(3.4vh - 22.4vw); }
+.mark:nth-child(8) { left: -12vw; top: -20.7vw; }   /* 第 5–9 个别围成一圈 */
+.mark:nth-child(9) { left: 17.5vw; margin-top: calc(3.4vh - 12.7vw); }
 /* 大小精调（跟着项目走） */
 .mark[href$="westfall-hillside-house.html"] { --z: 1.15; }
 .mark[href$="downstairs-bazaar.html"] { --z: .935; }
