@@ -41,9 +41,10 @@
     reveal.querySelector('.t').textContent = m.dataset.title;
     reveal.querySelector('.y').textContent = m.dataset.year;
     Object.assign(reveal.style, { left: x + 'px', top: y + 'px', width: w + 'px', transition: 'none',
-      clipPath: `circle(0px at ${cx - x}px ${cy - y}px)`, opacity: 1 });
+      clipPath: `circle(0px at ${cx - x}px ${cy - y}px)`, opacity: 0 });
     reveal.getBoundingClientRect();
     reveal.style.transition = '';
+    reveal.style.opacity = 1;
     reveal.style.clipPath = `circle(${Math.hypot(w, h + CAP)}px at ${cx - x}px ${cy - y}px)`;
     field.classList.add('has-hover'); m.classList.add('on');
   }
@@ -51,9 +52,20 @@
     reveal.style.opacity = 0;
     field.classList.remove('has-hover'); m.classList.remove('on');
   }
+  // 不要太敏感：鼠标在图上停住 DWELL 毫秒才展开；滚动中、以及停止滚动后 QUIET 毫秒内都不展开
+  const DWELL = 350, QUIET = 250;
+  let timer = 0, quietUntil = 0, shown = null;
+  const cancel = () => { clearTimeout(timer); timer = 0; };
+  const arm = (m) => {
+    if (shown === m || timer || performance.now() < quietUntil) return;
+    timer = setTimeout(() => { timer = 0; shown = m; open(m); }, DWELL);
+  };
+  const calm = () => { quietUntil = performance.now() + QUIET; cancel(); };
+  addEventListener('wheel', calm, { passive: true });
+  addEventListener('scroll', calm, { passive: true });
   marks.forEach((m) => {
-    m.addEventListener('mouseenter', () => open(m));
-    m.addEventListener('mouseleave', () => close(m));
+    m.addEventListener('mousemove', () => arm(m));   // 页面滚到鼠标底下不算，鼠标真动了才开始计时
+    m.addEventListener('mouseleave', () => { cancel(); if (shown === m) { shown = null; close(m); } });
   });
 })();
 
