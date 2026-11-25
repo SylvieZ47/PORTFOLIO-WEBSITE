@@ -152,7 +152,7 @@ def shell(lang, page, title, body, desc=''):
 
 <header class="grid top">
   <a class="name" href="index.html"><img class="sig" src="{r}img/sig-s.png" alt="">Sylvie Zhang</a>
-  <nav>{nav}<a class="lang" href="{other[0]}">{other[1]}</a></nav>
+  <nav><span class="tabs">{nav}</span><a class="lang" href="{other[0]}">{other[1]}</a></nav>
 </header>
 
 {body}
