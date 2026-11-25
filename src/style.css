@@ -88,6 +88,7 @@ h1, h2 { font: inherit; margin: 0; }
 /* 位置精调（跟着位置走，不跟项目走；哪个项目在第几个由 build.py 的 HOME_ORDER 决定） */
 .mark:nth-child(1) { margin-top: 30vh; }
 .mark:nth-child(2) { left: -10vw; top: -10vw; }
+.mark:nth-child(4) { left: -3vw; top: -6vh; }
 .mark:nth-child(5) { left: 6.6vw; top: -8vh; }
 .mark:nth-child(6) { left: 11.7vw; top: -8.7vh; }
 /* 大小精调（跟着项目走） */
