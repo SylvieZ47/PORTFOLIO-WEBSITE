@@ -254,7 +254,7 @@ h1, h2 { font: inherit; margin: 0; }
 .cell .ref { color: var(--faint); font-variant-numeric: tabular-nums; }
 .cell.e .ref { margin-left: auto; }
 .cell .lbl { padding-right: 8px; }
-.cell.soon .lbl { color: var(--mute); }
+.cell.nopic .lbl { color: var(--mute); }
 .cell.p:hover .lbl { text-decoration: underline; text-underline-offset: 3px; }
 /* 体块图：横条精灵图，--f 选第几帧；以建筑本身（不含影子）的中心对准格子中心 */
 .cell .ax, .cell .sk { position: absolute; pointer-events: none; }
