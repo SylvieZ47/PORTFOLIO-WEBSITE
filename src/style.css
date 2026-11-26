@@ -286,3 +286,9 @@ h1, h2 { font: inherit; margin: 0; }
 .refs figcaption { padding-top: 34px; font-size: 13px; text-align: center; }
 /* 首页里那张风格参考：说明一直显示 */
 .mark.cut.refmark .cap { opacity: 1; }
+/* 手机：剖切图一列一张，画大一些，剖切标记不压说明文字 */
+@media (max-width: 800px) {
+  .field:has(.mark.cut) { grid-template-columns: 1fr; row-gap: 72px; }
+  .field .mark.cut { width: min(100%, calc(64vw * var(--s, 1))); justify-self: center; }
+  .mark.cut .cap { padding-top: 32px; }
+}
