@@ -330,7 +330,7 @@ def project(p, lang):
              (S('role', lang), T(p['role'], lang)),
              (S('note', lang), ', '.join(T(a, lang) for a in p.get('awards', [])))]
     fhtml = ''.join(f'<dt>{E(k)}</dt><dd>{E(v)}</dd>' for k, v in facts if v)
-    # 开屏：主图占满一屏；标题缩小，放在图下面，和信息表并排（左标题、右信息）
+    # 开屏：标题缩小，和信息表并排（左标题、右信息）放在最上面；主图整张接在下面，不裁
     head = f'<section class="grid head">\n  <h1>{E(T(p["title"], lang))}</h1>\n  <dl class="facts">{fhtml}</dl>\n</section>\n\n'
     body = ''
     lead = f'<section class="grid row">\n  <div class="text lead" style="grid-column: 6 / 11"><p>{E(ps[0])}</p></div>\n</section>\n\n' if ps else ''
@@ -340,7 +340,7 @@ def project(p, lang):
         rest = ps[1:]
     else:
         c = p['_cover']
-        body += f'<section class="phero">\n  <div class="frame">{img_tag(c, r, lazy=False)}</div>\n</section>\n\n' + head + lead
+        body += head + f'<section class="phero">\n  <div class="frame">{img_tag(c, r, lazy=False)}</div>\n</section>\n\n' + lead
         imgs, dwgs, seq = list(p['_imgs']), list(p['_dwgs']), []
         if imgs: seq.append(imgs.pop(0))
         if dwgs: seq.append(dwgs.pop(0))
