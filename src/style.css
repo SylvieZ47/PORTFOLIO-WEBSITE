@@ -266,7 +266,7 @@ h1, h2 { font: inherit; margin: 0; }
 .dots + .field { margin-top: -45vh; position: relative; }   /* 最后几颗点还在化掉时，手绘图就从下面升上来，中间不留空屏 */
 @media (max-width: 800px) {
   .dots { height: 170vh; }
-  .dots + .field { margin-top: -15vh; }
+  .dots + .field { margin-top: -35vh; }
   .dname { font-size: 56px; }
   .dcap { row-gap: 14px; }
   .dsrc { justify-self: start; text-align: left; }
