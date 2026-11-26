@@ -270,4 +270,7 @@ h1, h2 { font: inherit; margin: 0; }
   .dname { font-size: 56px; }
   .dcap { row-gap: 14px; }
   .dsrc { justify-self: start; text-align: left; }
+  /* 手机：网点图落在顶栏下面，四边留白；名字和介绍排在图下面，不压网点 */
+  .dots canvas { inset: auto; top: calc(var(--top) + 8px); left: var(--m); }
+  .dcap { bottom: auto; top: calc(var(--top) + 8px + var(--ch, 50svh) + 28px); padding-bottom: 0; }
 }

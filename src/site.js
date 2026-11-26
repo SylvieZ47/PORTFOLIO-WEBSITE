@@ -101,13 +101,21 @@
   const pick = list[Math.floor(Math.random() * list.length)];
   src.textContent = `${pick.t}, ${pick.y}`; src.href = pick.href;
   const P = 9, DS = 3;                     // 点距；亮度表每 3px 取一个样
-  let tone = null, tw = 0, th = 0, W = 0, H = 0, dpr = 1, raf = 0;
+  let tone = null, tw = 0, th = 0, W = 0, H = 0, dpr = 1, raf = 0, phone = false;
   const img = new Image();
   img.crossOrigin = 'anonymous';
-  img.onload = () => { size(); draw(); };
+  img.onload = () => { size(); size(); draw(); };
   img.src = pick.img;
   function size() {
     dpr = Math.min(2, devicePixelRatio || 1);
+    phone = matchMedia('(max-width: 800px)').matches;
+    if (phone && img.naturalWidth) {               // 手机：图按原比例放在顶栏下面，四边留白，不裁切；名字放在图下面
+      const ar = img.naturalWidth / img.naturalHeight;
+      const mw = sec.querySelector('.stage').clientWidth - 2 * parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--m') || 16);
+      const w = Math.min(mw, innerHeight * .5 * ar);
+      cv.style.width = w + 'px'; cv.style.height = Math.round(w / ar) + 'px';
+      sec.style.setProperty('--ch', Math.round(w / ar) + 'px');
+    } else { cv.style.width = cv.style.height = ''; sec.style.removeProperty('--ch'); }
     W = cv.clientWidth; H = cv.clientHeight;
     cv.width = W * dpr; cv.height = H * dpr;
     if (!img.naturalWidth) return;
@@ -138,20 +146,20 @@
     const kOff = 1 - sm(0, .6, p), kOn = 1 - sm(.35, 1, p);
     if (kOn <= 0) return;
     const pageTop = cr.top + scrollY;                       // 画布在页面上的位置，用来对齐背景网格
-    const oy = ((-pageTop % P) + P) % P, ox = 0;
+    const oy = ((-pageTop % P) + P) % P, ox = ((-cr.left % P) + P) % P;
     const R = P * .5;
     const fadeA = H * .52, fadeB = H * .8;
     ctx.fillStyle = '#1c1c1c';
     for (let y = oy; y < H + P; y += P) {
       const gy = Math.round((y + pageTop) / P) % 2 === 0;
       for (let x = ox; x < W + P; x += P) {
-        const gx = Math.round(x / P) % 2 === 0;
+        const gx = Math.round((x + cr.left) / P) % 2 === 0;
         const k = gx && gy ? kOn : kOff;
         if (k <= 0) continue;
         const ti = Math.min(th - 1, Math.max(0, (y / DS) | 0)) * tw + Math.min(tw - 1, Math.max(0, (x / DS) | 0));
         let v = tone[ti];
         if (v < .04) continue;
-        const m = 1 - sm(fadeA, fadeB, y);            // 下面一截渐渐淡成网格，名字落在那里
+        const m = phone ? 1 : 1 - sm(fadeA, fadeB, y);            // 下面一截渐渐淡成网格，名字落在那里
         let lens = 1;                                   // 鼠标处像放大镜，点变大一点
         if (mx > -1e4) { const dd = (x - mx) * (x - mx) + (y - my) * (y - my); if (dd < 25000) lens = 1 + .7 * Math.exp(-dd / 5000); }
         const rad = Math.min(P * .62, R * Math.sqrt(v) * k * m * lens);
