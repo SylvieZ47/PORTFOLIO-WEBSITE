@@ -122,7 +122,7 @@
     tone = new Float32Array(tw * th);
     let lo = 1, hi = 0;
     for (let i = 0; i < tw * th; i++) { const L = (0.3 * d[i * 4] + 0.59 * d[i * 4 + 1] + 0.11 * d[i * 4 + 2]) / 255; tone[i] = L; lo = Math.min(lo, L); hi = Math.max(hi, L); }
-    for (let i = 0; i < tone.length; i++) tone[i] = Math.pow(Math.max(0, Math.min(1, 1 - (tone[i] - lo) / Math.max(.01, hi - lo) - .06)), 1.25);   // 拉满对比，越暗越大
+    for (let i = 0; i < tone.length; i++) tone[i] = Math.pow(Math.max(0, Math.min(1, 1 - (tone[i] - lo) / Math.max(.01, hi - lo) - .1)), 1.5);   // 拉满对比，越暗越大
   }
   const sm = (a, b, x) => { const t = Math.max(0, Math.min(1, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
   function draw() {
@@ -134,15 +134,14 @@
     cap.style.opacity = 1 - sm(.55, .9, p);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, W, H);
-    // 名字和简介下面让开一块，字才读得清
     const cr = cv.getBoundingClientRect();
-    const boxes = [name, intro].map((el) => { const b = el.getBoundingClientRect(); return [b.left - cr.left - 24, b.top - cr.top - 24, b.right - cr.left + 24, b.bottom - cr.top + 18]; });
     const kOff = 1 - sm(0, .5, p), kOn = 1 - sm(.3, 1, p);
     if (kOn <= 0) return;
     const pageTop = cr.top + scrollY;                       // 画布在页面上的位置，用来对齐背景网格
     const oy = ((-pageTop % P) + P) % P, ox = 0;
-    const R = P * .58;
-    ctx.fillStyle = '#141414';
+    const R = P * .5;
+    const fadeA = H * .52, fadeB = H * .8;
+    ctx.fillStyle = '#1c1c1c';
     for (let y = oy; y < H + P; y += P) {
       const gy = Math.round((y + pageTop) / P) % 2 === 0;
       for (let x = ox; x < W + P; x += P) {
@@ -152,11 +151,7 @@
         const ti = Math.min(th - 1, Math.max(0, (y / DS) | 0)) * tw + Math.min(tw - 1, Math.max(0, (x / DS) | 0));
         let v = tone[ti];
         if (v < .04) continue;
-        let m = 1;
-        for (const b of boxes) {
-          const dx = Math.max(b[0] - x, 0, x - b[2]), dy = Math.max(b[1] - y, 0, y - b[3]);
-          m = Math.min(m, sm(0, 50, Math.hypot(dx, dy)));
-        }
+        const m = 1 - sm(fadeA, fadeB, y);            // 下面一截渐渐淡成网格，名字落在那里
         const rad = R * Math.sqrt(v) * k * m;
         if (rad < .35) continue;
         ctx.beginPath(); ctx.arc(x, y, rad, 0, 6.2832); ctx.fill();
