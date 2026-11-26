@@ -275,3 +275,5 @@ h1, h2 { font: inherit; margin: 0; }
   .tset { height: 190vh; } .tset .desk { width: 88vw; }
   .tp-index h2, .tp-index ul { grid-column: 1 / -1; } .tp-index ul { margin-top: 16px; }
 }
+/* 掀纸时纸面透视会伸出屏幕，手机上不能出现横向滚动 */
+.tp { overflow-x: clip; }
