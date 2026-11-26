@@ -211,6 +211,10 @@ def shell(lang, page, title, body, desc=''):
 INK_META = json.load(open('assets/ink/meta.json')) if os.path.isfile('assets/ink/meta.json') else {}
 INK_SKIP = {'the-ark', 'seedlings', 'river-lantern'}   # 曲面太多，直线描不出来，先不放
 def ink_of(p):
+    k = PLACEHOLDER.get(p['slug']); fo = p.get('folder') or p['slug']
+    if k and fo in INK_META:
+        f = ref_files(k)
+        return {'ink': f['ink'], 'photo': asset(INK_META[fo]), 'ar': f['ar'], 'ph': True}
     folder = p.get('folder') or p['slug']
     if folder in INK_SKIP or folder not in INK_META: return None
     src = f'assets/ink/{folder}.png'
@@ -230,7 +234,28 @@ REFS = [
     {'key': 'santelia', 'author': ("Antonio Sant'Elia", '安东尼奥·圣伊利亚'),
      'title': ('Stepped house with external lifts, study for La Città Nuova', '带外置电梯的阶梯住宅，新城市研究'), 'year': '1914',
      'src': 'https://commons.wikimedia.org/wiki/File:Casa_a_gradinata_con_ascensori_esterni._Studio_di_pareticolare_per_la_citta_nuova_LCCN2007681976.jpg'},
+    {'key': 'lovell', 'author': ('Jeffrey B. Lentz, HABS', 'Jeffrey B. Lentz，美国历史建筑调查'),
+     'title': ('Lovell Health House, Los Angeles, section', '洛杉矶洛弗尔健康住宅，剖面'), 'year': '1969',
+     'src': 'https://commons.wikimedia.org/wiki/File:Lovell_(Health)_House,_4616_Dundee_Drive,_Los_Angeles,_Los_Angeles_County,_CA_HABS_CAL,19-LOSAN,66-_(sheet_8_of_9).png'},
+    {'key': 'bradbury', 'author': ('Robert C. Giebner, HABS', 'Robert C. Giebner，美国历史建筑调查'),
+     'title': ('Bradbury Building, Los Angeles, northeast elevation', '洛杉矶布拉德伯里大楼，东北立面'), 'year': '1968',
+     'src': 'https://commons.wikimedia.org/wiki/File:Bradbury_Building,_304_South_Broadway,_Los_Angeles,_Los_Angeles_County,_CA_HABS_CAL,19-LOSAN,11-_(sheet_5_of_12).png'},
+    {'key': 'ennis', 'author': ('Jean Davis, HABS', 'Jean Davis，美国历史建筑调查'),
+     'title': ('Ennis House, Los Angeles, west elevation', '洛杉矶恩尼斯住宅，西立面'), 'year': '1969',
+     'src': 'https://commons.wikimedia.org/wiki/File:Ennis_House,_2607_Glendower_Avenue,_Los_Angeles,_Los_Angeles_County,_CA_HABS_CAL,19-LOSAN,58-_(sheet_1_of_1).png'},
+    {'key': 'barnsdall', 'author': ('Jeffrey B. Lentz, HABS', 'Jeffrey B. Lentz，美国历史建筑调查'),
+     'title': ('Barnsdall Park, Los Angeles, plot plan', '洛杉矶巴恩斯代尔公园，总平面'), 'year': '1969',
+     'src': 'https://commons.wikimedia.org/wiki/File:Barnsdall_Park,_4800_Hollywood_Boulevard,_Los_Angeles,_Los_Angeles_County,_CA_HABS_CAL,19-LOSAN,55-_(sheet_3_of_5).png'},
 ]
+REF_BY = {x['key']: x for x in REFS}
+# 自动描线还不够稳：这些项目的线稿先用公有领域的图占位，照片仍是她的；页面写明"占位，非本人作品"和出处
+PLACEHOLDER = {'beck-corner-apartment': 'bradbury', '798-artist-district': 'barnsdall', 'ashton-house-remodel': 'ennis',
+               'pku-marxism-school-building': 'schinkel', 'westfall-hillside-house': 'lovell', 'downstairs-bazaar': 'santelia'}
+def ph_credit(slug, lang, link=True):
+    x = REF_BY[PLACEHOLDER[slug]]; i = 0 if lang == 'en' else 1
+    pre = 'Drawing placeholder, not my work:' if lang == 'en' else '线稿为占位，非本人作品：'
+    who = f'{E(x["author"][i])}, {x["year"]}'
+    return f'<span class="phc mute">{pre} ' + (f'<a class="u" href="styles.html">{who}</a>' if link else who) + '</span>'
 def ref_files(k):
     out = {}
     for kind, ext in (('scan', 'jpg'), ('ink', 'png')):
@@ -243,6 +268,9 @@ def ref_credit(x, lang):
     i = 0 if lang == 'en' else 1
     pre = 'Placeholder' if lang == 'en' else '占位参考'
     pd = 'Public domain, via Wikimedia Commons' if lang == 'en' else '公有领域，来源 Wikimedia Commons'
+    if x['key'] in ('lovell', 'bradbury', 'ennis', 'barnsdall'):
+        pd = ('Public domain (Historic American Buildings Survey, U.S. National Park Service), via Wikimedia Commons' if lang == 'en'
+              else '公有领域（美国国家公园管理局 HABS 测绘图），来源 Wikimedia Commons')
     return (f'<span class="mute">{pre}</span> {E(x["author"][i])}{SEP(lang)}{E(x["title"][i])}{SEP(lang)}{x["year"]}'
             f'<br><a class="u mute" href="{E(x["src"])}">{pd}</a>')
 REF_INTRO = ('Drawing style references. These are drawings by other architects, in the public domain, used here only as placeholders '
@@ -285,9 +313,6 @@ def home(lang):
     rank = lambda p: HOME_ORDER.index(p['slug']) if p['slug'] in HOME_ORDER else len(HOME_ORDER)
     shown = [(p, ink_of(p)) for p in sorted(PROJECTS, key=rank) if p['_any']]
     shown = [(p, k) for p, k in shown if k]
-    # 一张公有领域的大师剖面放进首页流里，示范目标线条；标明是占位参考、非本人作品
-    ref = REFS[0]; rf = ref_files(ref['key'])
-    shown.insert(1, (None, {'ar': rf['ar'], 'ink': rf['ink'], 'photo': {'small': rf['scan']}, 'ref': ref}))
     sizes = [(23 * k['ar'] ** .5, 23 * k['ar'] ** .5 / k['ar']) for p, k in shown]
     pos, field_h = home_layout(sizes)
     for (p, k), (x, y) in zip(shown, pos):
@@ -306,7 +331,7 @@ def home(lang):
                      f'<span class="cv" style="aspect-ratio:{k["ar"]:.4f}"><img class="ph" src="{r}{ph["small"]}" alt="" loading="lazy">'
                      f'<img class="ink" src="{r}{k["ink"]}" alt="{title}" loading="lazy">'
                      f'<span class="sl" aria-hidden="true"><i>A</i><i>A</i></span></span>'
-                     f'<span class="cap">{title} <span class="mute">{year_of(p)}</span></span></a>')
+                     f'<span class="cap">{title} <span class="mute">{year_of(p)}</span>{ph_credit(p["slug"], lang, False) if k.get("ph") else ""}</span></a>')
     rows = ''.join(f'<div class="r"><h2 class="caps">{E(T(x["label"], lang))}</h2><p>{E(T(x["text"], lang))}</p></div>' for x in CV['closing'])
     rows += f'<div class="r"><h2 class="caps">{S("contact", lang)}</h2><p>{contact_links(lang)}</p></div>'
     rows += f'<div class="r pic"><img class="seal" src="{r}img/sig-c.png" alt="{S("name", lang)}"></div>'
