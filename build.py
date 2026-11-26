@@ -16,6 +16,12 @@ HERO_VIDEO = 'assets/home.mp4'
 # 首页散点的排列顺序（只管首页；没列的项目排在后面）。第几个就落在第几个位置
 HOME_ORDER = ['798-artist-district', 'downstairs-bazaar', 'seedlings', 'river-lantern', 'westfall-hillside-house',
               'the-ark', 'ashton-house-remodel', 'pku-marxism-school-building', 'beck-corner-apartment']
+# 首页小图的大小微调（1 = 标准；每张图面积统一，这里再乘）
+HOME_ZOOM = {'westfall-hillside-house': 1.15, 'downstairs-bazaar': .935, 'river-lantern': 1.1, 'seedlings': 1.011}
+# 首页排版规则：每张图以中心为圆心画一个圆，半径 = 半条对角线 + HOME_GAP（单位 vw）。
+# 第 1、2 个圆斜着相切，之后每个圆同时和前两个圆相切，往下一路左右交错；整条链最后摆正、居中。
+# 间距整体嫌大或嫌小，只改 HOME_GAP。
+HOME_GAP = 2.3
 IMG_EXT = ('.jpg', '.jpeg', '.png', '.webp')
 
 # ── 读数据 ──────────────────────────────────────────────
@@ -176,6 +182,30 @@ def foot(lang, left=None):
     mail = E(CV["contact"]["email"])
     return f'<footer class="grid foot caps">\n  <span>{left}</span>\n  <a class="u" href="mailto:{mail}">{mail}</a>\n  <span>2026</span>\n</footer>\n'
 
+def home_layout(items):
+    """items: [(宽 vw, 高 vw)]。返回每张图左上角相对页面中线的 (x, y) 和总高，单位 vw。"""
+    import math
+    r = [math.hypot(w, h) / 2 + HOME_GAP for w, h in items]
+    c = [(0.0, 0.0)]
+    if len(items) > 1:
+        a = math.radians(60)
+        c.append((math.sin(a) * (r[0] + r[1]), math.cos(a) * (r[0] + r[1])))
+    for i in range(2, len(items)):
+        (x1, y1), (x2, y2) = c[i - 2], c[i - 1]
+        d = math.dist(c[i - 2], c[i - 1]); A, B = r[i - 2] + r[i], r[i - 1] + r[i]
+        u = (A * A - B * B + d * d) / (2 * d); v = math.sqrt(max(A * A - u * u, 0))
+        ux, uy = (x2 - x1) / d, (y2 - y1) / d
+        c.append(max(((x1 + ux * u - uy * v * k, y1 + uy * u + ux * v * k) for k in (1, -1)), key=lambda q: q[1]))
+    n = len(c)
+    if n > 2:   # 摆正：让各圆心的趋势线竖直
+        my = sum(q[1] for q in c) / n; mx = sum(q[0] for q in c) / n
+        t = math.atan2(sum((q[0] - mx) * (q[1] - my) for q in c), sum((q[1] - my) ** 2 for q in c))
+        c = [(mx + (q[0] - mx) * math.cos(t) - (q[1] - my) * math.sin(t), my + (q[0] - mx) * math.sin(t) + (q[1] - my) * math.cos(t)) for q in c]
+    lo = min(q[0] - w / 2 for q, (w, h) in zip(c, items)); hi = max(q[0] + w / 2 for q, (w, h) in zip(c, items))
+    top = min(q[1] - h / 2 for q, (w, h) in zip(c, items))
+    out = [(q[0] - w / 2 - (lo + hi) / 2, q[1] - h / 2 - top) for q, (w, h) in zip(c, items)]
+    return out, max(y + h for (x, y), (w, h) in zip(out, items))
+
 # ── 首页 ────────────────────────────────────────────────
 def home(lang):
     r = '' if lang == 'en' else '../'
@@ -190,12 +220,15 @@ def home(lang):
         hero = f'<section class="hero">\n  <div class="frame">{img_tag(hp["_cover"], r, lazy=False)}</div>\n  <div class="grid cap">{cap}{intro}</div>\n</section>'
     marks = []
     rank = lambda p: HOME_ORDER.index(p['slug']) if p['slug'] in HOME_ORDER else len(HOME_ORDER)
-    for p in sorted(PROJECTS, key=rank):
-        if not p['_any']: continue
-        d = p['_icon'] or (p['_dwgs'][0]['a'] if p['_dwgs'] else p['_cover'])
+    shown = [p for p in sorted(PROJECTS, key=rank) if p['_any']]
+    picks = [p['_icon'] or (p['_dwgs'][0]['a'] if p['_dwgs'] else p['_cover']) for p in shown]
+    zs = [HOME_ZOOM.get(p['slug'], 1) for p in shown]
+    sizes = [(17 * d['ar'] ** .5 * z, 17 * d['ar'] ** .5 * z / d['ar']) for d, z in zip(picks, zs)]
+    pos, field_h = home_layout(sizes)
+    for p, d, z, (x, y) in zip(shown, picks, zs, pos):
         rv = p['_index'] or p['_cover'] or d
         title = E(T(p['title'], lang))
-        marks.append(f'  <a class="mark" style="--s:{d["ar"] ** 0.5:.3f}" href="{p["slug"]}.html" data-img="{r}{rv["full"]}" '
+        marks.append(f'  <a class="mark" style="--s:{d["ar"] ** 0.5:.3f};--z:{z};--x:{x:.2f}vw;--y:{y:.2f}vw" href="{p["slug"]}.html" data-img="{r}{rv["full"]}" '
                      f'data-ar="{rv["ar"]:.4f}" data-title="{title}" data-year="{year_of(p)}">'
                      f'<img class="d" src="{r}{d["small"]}" width="{d["w"]}" height="{d["h"]}" alt="{title}" loading="lazy">'
                      f'<span class="mob">{title}</span></a>')
@@ -208,7 +241,7 @@ def home(lang):
     rows += f'<div class="r pic"><img class="seal" src="{r}img/sig-c.png" alt="Sylvie (Siqi) Zhang"></div>'
     body = f"""{hero}
 
-<section class="field">
+<section class="field" style="--h:{field_h:.2f}vw">
 {chr(10).join(marks)}
   <div class="reveal" aria-hidden="true"><img alt=""><div><span class="t"></span><span class="y mute"></span></div></div>
 </section>
