@@ -45,6 +45,11 @@ h1, h2 { font: inherit; margin: 0; }
 .top .name { grid-column: 1 / 6; justify-self: start; font-weight: 500; font-size: 18px; display: flex; align-items: center; gap: 12px;
   margin-left: -12px; padding: 4px 14px 4px 12px; border-radius: 999px; }
 .top .sig { width: 40px; height: 40px; }
+/* 头像彩蛋：鼠标移上去向左偏 15°、底变黑，线条反白；点击无效果 */
+.top .av { display: block; border-radius: 50%; transition: transform .35s cubic-bezier(.3,1.6,.5,1), background-color .2s; }
+.top .av .sig { transition: filter .2s; }
+.top .name:hover .av { transform: rotate(-15deg); background: #111; }
+.top .name:hover .av .sig { filter: invert(1); }
 /* 名字和 CN 也垫同样的白底，但不加阴影：白底上看不出来，压到图上才显出来 */
 .top .name, .top nav .lang { background: rgba(255, 255, 255, .86); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
 .top nav { grid-column: 6 / 13; display: flex; gap: 30px; align-items: center; text-transform: uppercase; font-size: 12px; letter-spacing: .09em; }

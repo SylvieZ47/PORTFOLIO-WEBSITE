@@ -196,7 +196,7 @@ def shell(lang, page, title, body, desc=''):
 <body>
 
 <header class="grid top">
-  <a class="name" href="index.html"><img class="sig" src="{r}img/sig-s.png" alt="">{S("name", lang)}</a>
+  <a class="name" href="index.html"><span class="av"><img class="sig" src="{r}img/sig-s.png" alt=""></span>{S("name", lang)}</a>
   <nav><span class="tabs">{nav}</span><a class="lang" href="{other[0]}">{other[1]}</a></nav>
 </header>
 
