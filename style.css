@@ -277,3 +277,6 @@ h1, h2 { font: inherit; margin: 0; }
 }
 /* 掀纸时纸面透视会伸出屏幕，手机上不能出现横向滚动 */
 .tp { overflow-x: clip; }
+/* 占位线稿的出处，跟在项目名后面 */
+.tset .tcap { flex-wrap: wrap; justify-content: center; }
+.tset .tcap .phc { flex-basis: 100%; text-align: center; font-size: 12px; }
