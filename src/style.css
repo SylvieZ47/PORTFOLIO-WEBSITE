@@ -253,15 +253,17 @@ h1, h2 { font: inherit; margin: 0; }
   padding: 10px 12px 0 0; font-size: 12px; line-height: 1.3; }
 .cell .ref { color: var(--faint); font-variant-numeric: tabular-nums; }
 .cell.e .ref { margin-left: auto; }
-.cell .lbl { padding-right: 8px; }
+.cell .lbl { padding-right: 8px; position: relative; z-index: 1; }
+.cell .yr { display: block; color: var(--mute); }
 .cell.nopic .lbl { color: var(--mute); }
 .cell.p:hover .lbl { text-decoration: underline; text-underline-offset: 3px; }
 /* 体块图：横条精灵图，--f 选第几帧；以建筑本身（不含影子）的中心对准格子中心 */
 .cell .ax, .cell .sk { position: absolute; pointer-events: none; }
 .cell .ax {
-  --u: calc(var(--cell) * .0021);   /* 建筑本身 300px → 约 0.63 格宽 */
+  /* 建筑本身最多占 0.6 格宽、0.5 格高，两者取小 */
+  --u: min(calc(var(--cell) * .6 / var(--ow)), calc(var(--cell) * .82 * .5 / var(--oh)));
   width: calc(var(--fw) * var(--u)); height: calc(var(--fh) * var(--u));
-  left: calc(50% - var(--ox) * var(--u)); top: calc(56% - var(--oy) * var(--u));
+  left: calc(50% - var(--ox) * var(--u)); top: calc(60% - var(--oy) * var(--u));
   background-size: calc(var(--n) * 100%) 100%; background-repeat: no-repeat;
   background-position: calc(var(--f, 4) / (var(--n) - 1) * 100%) 0;
   transition: opacity .35s;
@@ -269,7 +271,7 @@ h1, h2 { font: inherit; margin: 0; }
 .cell .sk { width: 78%; left: 11%; top: 50%; transform: translateY(-46%) scale(.96); opacity: 0; transition: opacity .35s, transform .35s; mix-blend-mode: multiply; }
 .cell.p:hover .ax { opacity: 0; }
 .cell.p:hover .sk { opacity: 1; transform: translateY(-46%) scale(1); }
-.closing { padding-top: 18vh; }
+.board + .closing { padding-top: 12vh; }
 @media (max-width: 800px) {
   .ax-intro .sun { display: none; }
   .board { --cols: 2 !important; }
