@@ -68,7 +68,7 @@ h1, h2 { font: inherit; margin: 0; }
 .hero-scroll { height: 320vh; }
 .hero-scroll .hero { position: sticky; top: var(--top); }
 
-/* ── 首页散点：桌面按圆相切规则排（见 build.py 的 HOME_GAP）；手机两栏网格 ── */
+/* ── 首页散点：桌面按三条线 + 圆不重叠的规则排（见 build.py 的 HOME_ 开头几项）；手机两栏网格 ── */
 .field {
   position: relative; margin-top: 27vh; padding: 0 var(--m);
   display: grid; grid-template-columns: repeat(12, 1fr);
@@ -78,7 +78,7 @@ h1, h2 { font: inherit; margin: 0; }
 .mark { display: block; position: relative; justify-self: center; width: calc(var(--k) * var(--s, 1) * var(--z, 1)); transition: opacity .3s; }
 .mark .d { mix-blend-mode: multiply; }
 .mark .mob { display: none; }
-/* 桌面：位置由 build.py 按"圆相切"规则算好（--x 相对页面中线、--y，单位 vw），这里只负责摆 */
+/* 桌面：位置由 build.py 按规则算好（--x 相对页面中线、--y，单位 vw），这里只负责摆 */
 @media (min-width: 801px) {
   .field { display: block; height: var(--h); padding: 0; }
   .field .mark { position: absolute; left: calc(50% + var(--x)); top: var(--y); }

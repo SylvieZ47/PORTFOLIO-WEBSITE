@@ -18,10 +18,16 @@ HOME_ORDER = ['798-artist-district', 'downstairs-bazaar', 'seedlings', 'river-la
               'the-ark', 'ashton-house-remodel', 'pku-marxism-school-building', 'beck-corner-apartment']
 # 首页小图的大小微调（1 = 标准；每张图面积统一，这里再乘）
 HOME_ZOOM = {'westfall-hillside-house': 1.15, 'downstairs-bazaar': .935, 'river-lantern': 1.1, 'seedlings': 1.011}
-# 首页排版规则：每张图以中心为圆心画一个圆，半径 = 半条对角线 + HOME_GAP（单位 vw）。
-# 第 1、2 个圆斜着相切，之后每个圆同时和前两个圆相切，往下一路左右交错；整条链最后摆正、居中。
-# 间距整体嫌大或嫌小，只改 HOME_GAP。
+# 首页排版规则（单位 vw）：
+# 画三条等距竖线，间距 HOME_LINE_GAP；图按 HOME_LINE_ORDER 轮流放到这三条线上（0 左、1 中、2 右），
+# 圆心压线，再按 HOME_NUDGE 左右错开一点。每张图以中心为圆心画圆，半径 = 半条对角线 + HOME_GAP。
+# 每张图从上一张下面开始往下找，停在第一个不和任何圆重叠的位置；
+# 圆心至少比上一张低 HOME_MIN_DY，所以不会有两个圆心在同一水平线。
+HOME_LINE_GAP = 23
+HOME_LINE_ORDER = [0, 2, 1]
+HOME_NUDGE = [0, -3, 2, 3, -2, -2.5, 1.5, 2.5, -3]
 HOME_GAP = 2.3
+HOME_MIN_DY = 7
 IMG_EXT = ('.jpg', '.jpeg', '.png', '.webp')
 
 # ── 读数据 ──────────────────────────────────────────────
@@ -185,25 +191,17 @@ def foot(lang, left=None):
 def home_layout(items):
     """items: [(宽 vw, 高 vw)]。返回每张图左上角相对页面中线的 (x, y) 和总高，单位 vw。"""
     import math
-    r = [math.hypot(w, h) / 2 + HOME_GAP for w, h in items]
-    c = [(0.0, 0.0)]
-    if len(items) > 1:
-        a = math.radians(60)
-        c.append((math.sin(a) * (r[0] + r[1]), math.cos(a) * (r[0] + r[1])))
-    for i in range(2, len(items)):
-        (x1, y1), (x2, y2) = c[i - 2], c[i - 1]
-        d = math.dist(c[i - 2], c[i - 1]); A, B = r[i - 2] + r[i], r[i - 1] + r[i]
-        u = (A * A - B * B + d * d) / (2 * d); v = math.sqrt(max(A * A - u * u, 0))
-        ux, uy = (x2 - x1) / d, (y2 - y1) / d
-        c.append(max(((x1 + ux * u - uy * v * k, y1 + uy * u + ux * v * k) for k in (1, -1)), key=lambda q: q[1]))
-    n = len(c)
-    if n > 2:   # 摆正：让各圆心的趋势线竖直
-        my = sum(q[1] for q in c) / n; mx = sum(q[0] for q in c) / n
-        t = math.atan2(sum((q[0] - mx) * (q[1] - my) for q in c), sum((q[1] - my) ** 2 for q in c))
-        c = [(mx + (q[0] - mx) * math.cos(t) - (q[1] - my) * math.sin(t), my + (q[0] - mx) * math.sin(t) + (q[1] - my) * math.cos(t)) for q in c]
-    lo = min(q[0] - w / 2 for q, (w, h) in zip(c, items)); hi = max(q[0] + w / 2 for q, (w, h) in zip(c, items))
+    c, r = [], []
+    for i, (w, h) in enumerate(items):
+        R = math.hypot(w, h) / 2 + HOME_GAP
+        x = (HOME_LINE_ORDER[i % len(HOME_LINE_ORDER)] - 1) * HOME_LINE_GAP + HOME_NUDGE[i % len(HOME_NUDGE)]
+        y = c[-1][1] + HOME_MIN_DY if c else 0.0
+        for (xj, yj), rj in zip(c, r):
+            dx = abs(x - xj)
+            if dx < R + rj: y = max(y, yj + math.sqrt((R + rj) ** 2 - dx * dx))
+        c.append((x, y)); r.append(R)
     top = min(q[1] - h / 2 for q, (w, h) in zip(c, items))
-    out = [(q[0] - w / 2 - (lo + hi) / 2, q[1] - h / 2 - top) for q, (w, h) in zip(c, items)]
+    out = [(q[0] - w / 2, q[1] - h / 2 - top) for q, (w, h) in zip(c, items)]
     return out, max(y + h for (x, y), (w, h) in zip(out, items))
 
 # ── 首页 ────────────────────────────────────────────────
