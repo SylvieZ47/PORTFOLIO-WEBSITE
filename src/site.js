@@ -103,6 +103,7 @@
   const P = 9, DS = 3;                     // 点距；亮度表每 3px 取一个样
   let tone = null, tw = 0, th = 0, W = 0, H = 0, dpr = 1, raf = 0;
   const img = new Image();
+  img.crossOrigin = 'anonymous';
   img.onload = () => { size(); draw(); };
   img.src = pick.img;
   function size() {
