@@ -9,6 +9,7 @@
     document.documentElement.classList.add('has-xh');
     xh.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
     xh.classList.toggle('wide', e.target.tagName === 'IMG' || e.target.tagName === 'VIDEO');
+    xh.classList.toggle('on-cut', !!(e.target.closest && e.target.closest('.mark.cut')));
   });
   document.addEventListener('mouseleave', () => document.documentElement.classList.remove('has-xh'));
 })();

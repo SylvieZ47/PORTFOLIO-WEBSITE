@@ -272,3 +272,9 @@ h1, h2 { font: inherit; margin: 0; }
   .mark.cut .cap { opacity: 1; padding-top: 22px; }
   .mark.cut .mob { display: none; }
 }
+.cut-intro { padding-top: 16vh; padding-bottom: 2vh; }
+.cut-intro .lede { grid-column: 1 / 8; font-size: clamp(22px, 2.3vw, 34px); line-height: 1.25; letter-spacing: -.01em; margin: 0; }
+.cut-intro .hint { grid-column: 1 / 8; margin: 28px 0 0; }
+/* 剖切线就是光标：在线稿上时把十字光标藏起来 */
+.has-xh .xh.on-cut { opacity: 0; }
+@media (max-width: 800px) { .cut-intro .lede, .cut-intro .hint { grid-column: 1 / -1; } .cut-intro { padding-top: 6vh; } }

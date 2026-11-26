@@ -12,7 +12,7 @@ from PIL import Image, ImageDraw
 
 INK = (22, 22, 22)
 
-def trace(src, out, W=1400, min_len=.028, hatch=True, seed=3, curves=False):
+def trace(src, out, W=1000, min_len=.028, hatch=True, seed=3, curves=False):
     rng = np.random.default_rng(seed)
     im = Image.open(src).convert('RGB')
     w0, h0 = im.size
@@ -62,7 +62,7 @@ def trace(src, out, W=1400, min_len=.028, hatch=True, seed=3, curves=False):
                     dth = abs(b[0] - th); dth = min(dth, math.pi - dth)
                     if dth > math.radians(1.8): continue
                     r0 = b[1] * nx + b[2] * ny; r1 = b[3] * nx + b[4] * ny
-                    if abs(r0 - rho) > 2.6 or abs(r1 - rho) > 2.6: continue
+                    if abs(r0 - rho) > 2 or abs(r1 - rho) > 2: continue
                     q = [b[1] * ux + b[2] * uy, b[3] * ux + b[4] * uy]
                     if min(q) > t1 + gap or max(q) < t0 - gap: continue
                     t0, t1 = min(t0, min(q)), max(t1, max(q)); used[j] = True; grp.append(b); changed = True
@@ -101,10 +101,10 @@ def trace(src, out, W=1400, min_len=.028, hatch=True, seed=3, curves=False):
     Lmax = max([sg[4] for sg in segs] or [1])
     for x0, y0, x1, y1, L, c in segs:
         ux, uy = (x1 - x0) / L, (y1 - y0) / L
-        o0 = 3 + rng.random() * 7; o1 = 3 + rng.random() * 7   # 交点出头
+        o0 = 3 + rng.random() * 6; o1 = 3 + rng.random() * 6   # 交点出头
         X0, Y0 = x0 - ux * o0, y0 - uy * o0
         X1, Y1 = x1 + ux * o1, y1 + uy * o1
-        wgt = .7 + 1.3 * min(1, (L / Lmax) ** .5 * min(1, c / 60))
+        wgt = 1.1 + 1.6 * min(1, (L / Lmax) ** .5 * min(1, c / 60))
         d.line([(X0 * SS, Y0 * SS), (X1 * SS, Y1 * SS)], fill=255, width=max(1, round(wgt * SS)))
     if curves:
         # 曲面项目：长的、顺的轮廓线，平滑后一笔画出
@@ -123,7 +123,7 @@ def trace(src, out, W=1400, min_len=.028, hatch=True, seed=3, curves=False):
                 ker = np.ones(k) / k
                 pts = np.stack([np.convolve(pts[:, i], ker, mode='valid') for i in (0, 1)], 1)
             pts = cv2.approxPolyDP(np.ascontiguousarray(pts, dtype=np.float32).reshape(-1, 1, 2), 1.2, False)[:, 0, :]
-            d.line([(float(x) * SS, float(y) * SS) for x, y in pts], fill=235, width=max(1, round(.9 * SS)), joint='curve')
+            d.line([(float(x) * SS, float(y) * SS) for x, y in pts], fill=235, width=max(1, round(1.3 * SS)), joint='curve')
     if hatch:
         # 最暗的大块区域里，45° 平行排线（克制）
         # 只在大块、平整（低纹理）的暗面里排线：树和草不排
@@ -136,7 +136,7 @@ def trace(src, out, W=1400, min_len=.028, hatch=True, seed=3, curves=False):
         hm = Image.new('L', (W * SS, H * SS), 0); hd = ImageDraw.Draw(hm)
         step = 7
         for k in range(-H, W, step):
-            hd.line([(k * SS, H * SS), ((k + H) * SS, 0)], fill=255, width=SS)
+            hd.line([(k * SS, H * SS), ((k + H) * SS, 0)], fill=255, width=round(1.1 * SS))
         mask = Image.fromarray(dark * 255).resize((W * SS, H * SS), Image.NEAREST)
         hatch_img = Image.fromarray((np.asarray(hm) * (np.asarray(mask) > 0) * .55).astype(np.uint8))
         cv = Image.fromarray(np.maximum(np.asarray(cv), np.asarray(hatch_img)))

@@ -219,7 +219,7 @@ def ink_of(p):
         w, h = im.size
         if not (os.path.isfile(dst) and os.path.getmtime(dst) >= os.path.getmtime(src)):
             os.makedirs(os.path.dirname(dst), exist_ok=True)
-            im.resize((1100, round(1100 * h / w)), Image.LANCZOS).save(dst, optimize=True)
+            im.save(dst, optimize=True)
     return {'ink': dst[len(OUT) + 1:], 'photo': asset(INK_META[folder]), 'ar': w / h}
 
 def home_layout(items):
@@ -250,17 +250,14 @@ def home(lang):
     hp = next(p for p in PROJECTS if p['slug'] == HERO_PROJECT)
     cap = f'<span><a href="{hp["slug"]}.html">{E(T(hp["title"], lang))}</a> <span class="mute">{year_of(hp)}</span></span>'
     intro = f'<p>{E(T(CV["intro"], lang))}</p>'
-    if os.path.isfile(HERO_VIDEO):
-        os.makedirs(f'{OUT}/img', exist_ok=True); shutil.copyfile(HERO_VIDEO, f'{OUT}/img/home.mp4')
-        media = f'<video src="{r}img/home.mp4" poster="{r}{hp["_cover"]["full"]}" muted playsinline preload="auto"></video>'
-        hero = f'<div class="hero-scroll">\n<section class="hero">\n  <div class="frame">{media}</div>\n  <div class="grid cap">{cap}{intro}</div>\n</section>\n</div>'
-    else:
-        hero = f'<section class="hero">\n  <div class="frame">{img_tag(hp["_cover"], r, lazy=False)}</div>\n  <div class="grid cap">{cap}{intro}</div>\n</section>'
+    # 实验：剖切。开场不放彩色渲染图，只留一句介绍和一行提示
+    hero = (f'<section class="grid cut-intro"><p class="lede">{E(T(CV["intro"], lang))}</p>'
+            f'<p class="caps mute hint">{"Move across a drawing to cut it" if lang == "en" else "光标划过线稿，剖开看原图"}</p></section>')
     marks = []
     rank = lambda p: HOME_ORDER.index(p['slug']) if p['slug'] in HOME_ORDER else len(HOME_ORDER)
     shown = [(p, ink_of(p)) for p in sorted(PROJECTS, key=rank) if p['_any']]
     shown = [(p, k) for p, k in shown if k]
-    sizes = [(18 * k['ar'] ** .5, 18 * k['ar'] ** .5 / k['ar']) for p, k in shown]
+    sizes = [(23 * k['ar'] ** .5, 23 * k['ar'] ** .5 / k['ar']) for p, k in shown]
     pos, field_h = home_layout(sizes)
     for (p, k), (x, y) in zip(shown, pos):
         title = E(T(p['title'], lang))
