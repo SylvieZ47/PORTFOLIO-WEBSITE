@@ -87,3 +87,25 @@
   v.addEventListener('loadedmetadata', tick);
   tick();
 })();
+
+// ── 实验：硫酸纸掀起。每组按自己的滚动进度：0–20% 纸盖着，20–80% 掀起，原图从灰到彩 ──
+(() => {
+  const sets = [...document.querySelectorAll('.tset')];
+  if (!sets.length) return;
+  const sm = (a, b, x) => { const t = Math.max(0, Math.min(1, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
+  let raf = 0;
+  const tick = () => {
+    raf = 0;
+    for (const s of sets) {
+      const r = s.getBoundingClientRect();
+      const p = Math.max(0, Math.min(1, -r.top / Math.max(1, r.height - innerHeight)));
+      const e = sm(.18, .78, p);
+      s.style.setProperty('--e', e.toFixed(4));
+      s.style.setProperty('--sat', (.25 + .75 * e).toFixed(3));
+    }
+  };
+  const req = () => { if (!raf) raf = requestAnimationFrame(tick); };
+  addEventListener('scroll', req, { passive: true });
+  addEventListener('resize', req);
+  tick();
+})();
