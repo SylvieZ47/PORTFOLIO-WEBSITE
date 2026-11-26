@@ -5,7 +5,7 @@ Each project = a few simple volumes eyeballed from its renders. Output:
 Usage:  python src/axon.py            (needs numpy, scipy, Pillow)"""
 import math, os, json
 import numpy as np
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageFilter
 from scipy.spatial import ConvexHull
 
 FRAMES = 9
@@ -64,12 +64,14 @@ class Model:
             self.face([P(ri, a1, z0), P(ro, a1, z0), P(ro, a1, z1), P(ri, a1, z1)], e)
         return self
     def hull(self, pts):
-        pts = np.array(pts, float); h = ConvexHull(pts); c = pts.mean(0)
+        pts = np.array(pts, float); h = ConvexHull(pts); planes = {}
         for s, eq in zip(h.simplices, h.equations):
             tri = pts[s]
             n = np.cross(tri[1] - tri[0], tri[2] - tri[0])
             if n @ eq[:3] < 0: tri = tri[::-1]
-            self.face(tri, self.newg())
+            key = tuple(np.round(eq, 3))
+            if key not in planes: planes[key] = self.newg()
+            self.face(tri, planes[key])
         return self
     def vaults(self, x0, x1, y0, y1, z, n, rise, segs=16):
         """n barrel vaults side by side along x, each running in y"""
@@ -167,13 +169,22 @@ def M_lantern():
     for (x, y) in ((-19, -9), (19, -10), (-21, 8), (20, 9), (2, -12)):
         m.box(x - .6, y - .6, x + .6, y + .6, 0, 1.1)
     return m
+def pod(m, cx, cy, z0, w, h, rot, rng):
+    """one low-poly pod: a faceted, slightly irregular stone shape (The Ark's cells)"""
+    pts = []
+    for zf, rf, n, a0 in ((0, .62, 3, .4), (.4, 1, 5, 0), (.8, .62, 4, .3), (1, .15, 2, .9)):
+        for i in range(n):
+            a = rot + a0 + 2 * math.pi * i / n + rng.uniform(-.18, .18)
+            r = w / 2 * rf * rng.uniform(.9, 1.08)
+            pts.append((cx + r * math.cos(a), cy + r * math.sin(a), z0 + h * zf + rng.uniform(-.04, .04) * h))
+    m.hull(pts)
 def M_ark():
-    m = Model(); rng = np.random.default_rng(7)
-    for (cx, cy, s) in ((0, 0, 9), (10, 6, 6.5), (-8, 9, 5), (7, -9, 4)):
-        pts = rng.normal(size=(14, 3)); pts /= np.linalg.norm(pts, axis=1)[:, None]
-        pts *= s * np.array([1, 1, .85]); pts[:, 2] += s * .7
-        pts[:, 2] = np.maximum(pts[:, 2], 0); pts[:, 0] += cx; pts[:, 1] += cy
-        m.hull(pts)
+    m = Model(); rng = np.random.default_rng(11)
+    pod(m, 0, 0, 0, 7.5, 10, 0, rng)           # 三颗叠起来的主塔，竖向的石块
+    pod(m, 1, -.5, 9.6, 6, 7.6, .5, rng)
+    pod(m, .3, .4, 16.8, 4, 5.2, 1.1, rng)
+    pod(m, 11, 4.5, 0, 5, 6.4, .8, rng)        # 旁边两颗单独的
+    pod(m, -9, 7, 0, 3.6, 4.6, .2, rng)
     return m
 
 PROJECTS = {'798-artist-district': M_798, 'seedlings': M_seedlings, 'downstairs-bazaar': M_bazaar,
@@ -183,7 +194,7 @@ PROJECTS = {'798-artist-district': M_798, 'seedlings': M_seedlings, 'downstairs-
 # ── rendering ──
 def sun(t):
     az = math.radians(-15 - 150 * t)          # east-southeast -> west-southwest
-    el = math.radians(30 + 28 * math.sin(math.pi * t))
+    el = math.radians(50 + 16 * math.sin(math.pi * t))   # 太阳高，影子短
     return np.array([math.cos(az) * math.cos(el), math.sin(az) * math.cos(el), math.sin(el)])
 
 def normal(P):
@@ -250,10 +261,11 @@ def render(m, L, lo, hi, OW):
         e |= (a != b) | ((np.abs(za - zb2) > 3 / s * 6) & solid)
     e = np.maximum(e, np.roll(e, 1, 0)) if SS >= 3 else e
     out = np.zeros((H, WW, 4), np.uint8)
-    sh = np.array(shad) > 0
-    out[sh] = (17, 17, 17, 255)
+    sa = np.array(shad.filter(ImageFilter.GaussianBlur(2.2 * SS)), float) / 255   # 影子：浅、软
+    sh = sa > .02
+    out[sh, 0:3] = 17; out[sh, 3] = (sa[sh] * 54).astype(np.uint8)
     out[solid, 0:3] = col[solid, None].astype(np.uint8); out[solid, 3] = 255
-    out[e & (solid | sh)] = (17, 17, 17, 255)
+    out[e & solid] = (17, 17, 17, 255)
     im = Image.fromarray(out, 'RGBA').resize((W, round(H / SS)), Image.LANCZOS)
     im.info['obj'] = [(olo[0] - lo[0]) * s / SS, (olo[1] - lo[1]) * s / SS, (ohi[0] - olo[0]) * s / SS, (ohi[1] - olo[1]) * s / SS]
     return im
