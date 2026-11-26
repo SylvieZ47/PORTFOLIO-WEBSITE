@@ -209,7 +209,7 @@ def shell(lang, page, title, body, desc=''):
 # ── 实验：剖切。src/ink.py 把每个项目的封面描成钢笔线稿（透明 PNG，和原图同尺寸），
 #    放在原图上面；光标是一条剖切线，线左边露出原图 ──
 INK_META = json.load(open('assets/ink/meta.json')) if os.path.isfile('assets/ink/meta.json') else {}
-INK_SKIP = {'the-ark'}   # 曲面太多，直线描不出来，先不放
+INK_SKIP = {'the-ark', 'seedlings'}   # 曲面太多，直线描不出来，先不放
 def ink_of(p):
     folder = p.get('folder') or p['slug']
     if folder in INK_SKIP or folder not in INK_META: return None
@@ -221,6 +221,33 @@ def ink_of(p):
             os.makedirs(os.path.dirname(dst), exist_ok=True)
             im.save(dst, optimize=True)
     return {'ink': dst[len(OUT) + 1:], 'photo': asset(INK_META[folder]), 'ar': w / h}
+
+# ── 线稿风格参考：别的建筑师的公有领域图，只作占位，供挑线条风格；页面上写明出处和"非本人作品" ──
+REFS = [
+    {'key': 'schinkel', 'author': ('Karl Friedrich Schinkel', '卡尔·弗里德里希·申克尔'),
+     'title': ('Altes Museum, Berlin, cross-section', '柏林老博物馆，横剖面'), 'year': '1824',
+     'src': 'https://commons.wikimedia.org/wiki/File:SAE_MuseumQS.jpg'},
+    {'key': 'santelia', 'author': ("Antonio Sant'Elia", '安东尼奥·圣伊利亚'),
+     'title': ('Stepped house with external lifts, study for La Città Nuova', '带外置电梯的阶梯住宅，新城市研究'), 'year': '1914',
+     'src': 'https://commons.wikimedia.org/wiki/File:Casa_a_gradinata_con_ascensori_esterni._Studio_di_pareticolare_per_la_citta_nuova_LCCN2007681976.jpg'},
+]
+def ref_files(k):
+    out = {}
+    for kind, ext in (('scan', 'jpg'), ('ink', 'png')):
+        src = f'assets/refs/{k}_{kind}.{ext}'; dst = f'{OUT}/img/refs/{k}_{kind}.{ext}'
+        os.makedirs(os.path.dirname(dst), exist_ok=True); shutil.copyfile(src, dst)
+        out[kind] = dst[len(OUT) + 1:]
+    with Image.open(f'assets/refs/{k}_ink.png') as im: out['ar'] = im.size[0] / im.size[1]
+    return out
+def ref_credit(x, lang):
+    i = 0 if lang == 'en' else 1
+    pre = 'Placeholder' if lang == 'en' else '占位参考'
+    pd = 'Public domain, via Wikimedia Commons' if lang == 'en' else '公有领域，来源 Wikimedia Commons'
+    return (f'<span class="mute">{pre}</span> {E(x["author"][i])}{SEP(lang)}{E(x["title"][i])}{SEP(lang)}{x["year"]}'
+            f'<br><a class="u mute" href="{E(x["src"])}">{pd}</a>')
+REF_INTRO = ('Drawing style references. These are drawings by other architects, in the public domain, used here only as placeholders '
+             'to choose a line style before my own projects are redrawn. Not my work.',
+             '线稿风格参考。以下是其他建筑师的公有领域作品，只作占位，用来挑选线条风格，之后再按选定的风格重画我的项目。非本人作品。')
 
 def home_layout(items):
     """items: [(宽 vw, 高 vw)]。返回每张图左上角相对页面中线的 (x, y) 和总高，单位 vw。"""
@@ -252,7 +279,8 @@ def home(lang):
     intro = f'<p>{E(T(CV["intro"], lang))}</p>'
     # 实验：剖切。开场不放彩色渲染图，只留一句介绍和一行提示
     hero = (f'<section class="grid cut-intro"><p class="lede">{E(T(CV["intro"], lang))}</p>'
-            f'<p class="caps mute hint">{"Move across a drawing to cut it" if lang == "en" else "光标划过线稿，剖开看原图"}</p></section>')
+            f'<p class="caps mute hint">{"Move across a drawing to cut it" if lang == "en" else "光标划过线稿，剖开看原图"}'
+            f'<br><a class="u" href="styles.html">{"Line style references" if lang == "en" else "线稿风格参考"}</a></p></section>')
     marks = []
     rank = lambda p: HOME_ORDER.index(p['slug']) if p['slug'] in HOME_ORDER else len(HOME_ORDER)
     shown = [(p, ink_of(p)) for p in sorted(PROJECTS, key=rank) if p['_any']]
@@ -281,6 +309,24 @@ def home(lang):
 </section>
 """
     return shell(lang, 'index.html', '', body)
+
+def styles(lang):
+    r = '' if lang == 'en' else '../'
+    items = []
+    for x in REFS:
+        f = ref_files(x['key'])
+        items.append(f'<figure class="ref"><div class="mark cut" style="--s:{f["ar"] ** 0.5:.3f}">'
+                     f'<span class="cv" style="aspect-ratio:{f["ar"]:.4f}"><img class="ph" src="{r}{f["scan"]}" alt="">'
+                     f'<img class="ink" src="{r}{f["ink"]}" alt=""><span class="sl" aria-hidden="true"><i>A</i><i>A</i></span></span></div>'
+                     f'<figcaption>{ref_credit(x, lang)}</figcaption></figure>')
+    hint = 'Move across a drawing to cut it' if lang == 'en' else '光标划过线稿，剖开看原图'
+    body = f"""<section class="grid cut-intro"><p class="lede">{E(REF_INTRO[0 if lang == 'en' else 1])}</p><p class="caps mute hint">{hint}</p></section>
+
+<section class="refs">
+{chr(10).join(items)}
+</section>
+"""
+    return shell(lang, 'styles.html', 'Style references' if lang == 'en' else '线稿风格参考', body)
 
 # ── Work ───────────────────────────────────────────────
 def work(lang):
@@ -450,7 +496,7 @@ shutil.copyfile('src/site.js', f'{OUT}/site.js')
 if os.path.isfile('assets/cv.pdf'): shutil.copyfile('assets/cv.pdf', f'{OUT}/cv.pdf')
 write(f'{OUT}/.nojekyll', '')
 for lang, d in (('en', OUT), ('zh', f'{OUT}/zh')):
-    write(f'{d}/index.html', home(lang)); write(f'{d}/work.html', work(lang))
+    write(f'{d}/index.html', home(lang)); write(f'{d}/work.html', work(lang)); write(f'{d}/styles.html', styles(lang))
     write(f'{d}/about.html', about(lang)); write(f'{d}/cv.html', cv(lang))
     for p in PROJECTS: write(f'{d}/{p["slug"]}.html', project(p, lang))
 

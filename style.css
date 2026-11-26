@@ -278,3 +278,10 @@ h1, h2 { font: inherit; margin: 0; }
 /* 剖切线就是光标：在线稿上时把十字光标藏起来 */
 .has-xh .xh.on-cut { opacity: 0; }
 @media (max-width: 800px) { .cut-intro .lede, .cut-intro .hint { grid-column: 1 / -1; } .cut-intro { padding-top: 6vh; } }
+
+/* 线稿风格参考页：两张占位图竖排，宽一点，好看清线条 */
+.refs { display: grid; gap: 16vh; justify-items: center; padding: 10vh 0 18vh; }
+.refs .ref { margin: 0; }
+.refs .mark { width: min(78vw, calc(58vh * var(--s) * var(--s))); }
+.refs .mark.cut .sl { opacity: .0; }
+.refs figcaption { padding-top: 34px; font-size: 13px; text-align: center; }
