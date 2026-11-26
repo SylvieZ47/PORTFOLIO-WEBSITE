@@ -255,8 +255,9 @@ h1, h2 { font: inherit; margin: 0; }
    往下滚，名字缩小飞进左上角，变成页眉 ── */
 .top .name { font-family: "Instrument Serif", Georgia, serif; font-weight: 400; font-size: 23px; letter-spacing: -.01em; }
 .top .name .t { display: inline-block; }
-.intro { height: 190vh; margin-top: calc(var(--top) * -1); }
-.intro .stage { position: sticky; top: 0; height: 100svh; display: grid; place-items: center; }
+.intro { height: 88svh; margin-top: calc(var(--top) * -1); }
+.intro .stage { position: fixed; inset: 0; z-index: 30; display: grid; place-items: center; pointer-events: none; }
+.intro .nm { pointer-events: auto; }
 .intro .nm { text-align: center; position: relative; }
 .intro .big { font-family: "Instrument Serif", Georgia, serif; font-weight: 400; font-size: clamp(64px, 13.5vw, 230px); line-height: .9;
   letter-spacing: -.035em; transform-origin: 0 0; will-change: transform; white-space: nowrap; }
@@ -276,6 +277,5 @@ h1, h2 { font: inherit; margin: 0; }
 .intro-on .top nav { opacity: 0; pointer-events: none; }
 .intro + .field { margin-top: 4vh; }
 @media (max-width: 800px) {
-  .intro { height: 150vh; }
   .top .name { font-size: 20px; }
 }

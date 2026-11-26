@@ -103,9 +103,8 @@
   let raf = 0;
   function tick() {
     raf = 0;
-    const r = sec.getBoundingClientRect();
-    const p = Math.max(0, Math.min(1, -r.top / Math.max(1, r.height - innerHeight)));
-    const e = ease(Math.min(1, p / .85));
+    const p = Math.max(0, Math.min(1, scrollY / (innerHeight * .6)));
+    const e = ease(p);
     big.style.transform = 'none';
     const a = big.getBoundingClientRect(), b = target.getBoundingClientRect();
     const k = b.height / a.height * 1.0;
@@ -114,7 +113,7 @@
     const fade = Math.max(0, 1 - p * 4);
     sub.style.opacity = menu.matches(':hover') ? 0 : fade; hint.style.opacity = fade;
     menu.style.visibility = p > .05 ? 'hidden' : '';
-    const done = p >= .85;
+    const done = p >= 1;
     root.classList.toggle('intro-on', !done);
     big.style.visibility = done ? 'hidden' : '';
   }
@@ -122,7 +121,7 @@
   addEventListener('scroll', req, { passive: true });
   addEventListener('resize', req);
   document.fonts && document.fonts.ready.then(req);
-  big.addEventListener('click', () => scrollTo({ top: sec.offsetTop + sec.offsetHeight - innerHeight, behavior: 'smooth' }));
+  big.addEventListener('click', () => scrollTo({ top: innerHeight * .6, behavior: 'smooth' }));
   big.style.cursor = 'pointer';
   tick();
 })();
