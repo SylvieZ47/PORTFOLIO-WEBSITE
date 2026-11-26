@@ -257,7 +257,7 @@ h1, h2 { font: inherit; margin: 0; }
 .tp-intro .hint { grid-column: 1 / 8; margin: 28px 0 0; }
 .tset { height: 230vh; }
 .tset .st { position: sticky; top: 0; height: 100svh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 26px; }
-.tset .desk { position: relative; margin: 0; width: min(68vw, calc(66svh * var(--ar))); aspect-ratio: var(--ar); perspective: 2200px; perspective-origin: 50% -20%; }
+.tset .desk { position: relative; margin: 0; width: min(68vw, calc(58svh * var(--ar))); aspect-ratio: var(--ar); perspective: 2200px; perspective-origin: 50% -20%; }
 .tset .ph { display: block; width: 100%; height: 100%; object-fit: cover; filter: saturate(var(--sat, .25)); }
 .tset .paper { position: absolute; inset: -3% -2.5%; background: rgba(250, 249, 245, var(--po, .86)); backdrop-filter: blur(1.2px); -webkit-backdrop-filter: blur(1.2px);
   box-shadow: 0 0 0 .5px rgba(0, 0, 0, .08), 0 calc(4px + var(--e, 0) * 30px) calc(10px + var(--e, 0) * 40px) rgba(0, 0, 0, calc(.05 + var(--e, 0) * .1));
@@ -279,4 +279,5 @@ h1, h2 { font: inherit; margin: 0; }
 .tp { overflow-x: clip; }
 /* 占位线稿的出处，跟在项目名后面 */
 .tset .tcap { flex-wrap: wrap; justify-content: center; }
+.tset .tcap { position: relative; z-index: 2; }
 .tset .tcap .phc { flex-basis: 100%; text-align: center; font-size: 12px; }
