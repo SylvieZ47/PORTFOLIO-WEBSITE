@@ -209,7 +209,7 @@ def shell(lang, page, title, body, desc=''):
 # ── 实验：剖切。src/ink.py 把每个项目的封面描成钢笔线稿（透明 PNG，和原图同尺寸），
 #    放在原图上面；光标是一条剖切线，线左边露出原图 ──
 INK_META = json.load(open('assets/ink/meta.json')) if os.path.isfile('assets/ink/meta.json') else {}
-INK_SKIP = {'the-ark', 'seedlings'}   # 曲面太多，直线描不出来，先不放
+INK_SKIP = {'the-ark', 'seedlings', 'river-lantern'}   # 曲面太多，直线描不出来，先不放
 def ink_of(p):
     folder = p.get('folder') or p['slug']
     if folder in INK_SKIP or folder not in INK_META: return None
