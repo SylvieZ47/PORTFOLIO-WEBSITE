@@ -285,9 +285,21 @@ def home(lang):
     rank = lambda p: HOME_ORDER.index(p['slug']) if p['slug'] in HOME_ORDER else len(HOME_ORDER)
     shown = [(p, ink_of(p)) for p in sorted(PROJECTS, key=rank) if p['_any']]
     shown = [(p, k) for p, k in shown if k]
+    # 一张公有领域的大师剖面放进首页流里，示范目标线条；标明是占位参考、非本人作品
+    ref = REFS[0]; rf = ref_files(ref['key'])
+    shown.insert(1, (None, {'ar': rf['ar'], 'ink': rf['ink'], 'photo': {'small': rf['scan']}, 'ref': ref}))
     sizes = [(23 * k['ar'] ** .5, 23 * k['ar'] ** .5 / k['ar']) for p, k in shown]
     pos, field_h = home_layout(sizes)
     for (p, k), (x, y) in zip(shown, pos):
+        if p is None:
+            x_ = k['ref']
+            tag = 'Style reference, not my work' if lang == 'en' else '风格参考，非本人作品'
+            marks.append(f'  <div class="mark cut refmark" style="--s:{k["ar"] ** 0.5:.3f};--z:1;--x:{x:.2f}vw;--y:{y:.2f}vw">'
+                         f'<span class="cv" style="aspect-ratio:{k["ar"]:.4f}"><img class="ph" src="{r}{k["photo"]["small"]}" alt="" loading="lazy">'
+                         f'<img class="ink" src="{r}{k["ink"]}" alt="" loading="lazy">'
+                         f'<span class="sl" aria-hidden="true"><i>A</i><i>A</i></span></span>'
+                         f'<span class="cap"><span class="mute">{tag}:</span> <a class="u" href="styles.html">{E(x_["author"][0 if lang == "en" else 1])}, {x_["year"]}</a></span></div>')
+            continue
         title = E(T(p['title'], lang))
         ph = k['photo']
         marks.append(f'  <a class="mark cut" style="--s:{k["ar"] ** 0.5:.3f};--z:1;--x:{x:.2f}vw;--y:{y:.2f}vw" href="{p["slug"]}.html">'

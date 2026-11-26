@@ -284,3 +284,5 @@ h1, h2 { font: inherit; margin: 0; }
 .refs .ref { margin: 0; }
 .refs .mark { width: min(78vw, calc(52vh * var(--s) * var(--s))); }
 .refs figcaption { padding-top: 34px; font-size: 13px; text-align: center; }
+/* 首页里那张风格参考：说明一直显示 */
+.mark.cut.refmark .cap { opacity: 1; }
