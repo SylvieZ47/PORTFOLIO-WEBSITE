@@ -288,6 +288,14 @@ def home(lang):
                     f'<div class="paper"><img class="ink" src="{r}{k["ink"]}" alt="{title}"></div></figure>'
                     f'<p class="tcap"><span class="mute">{len(sets) + 1:02d}</span> <a class="u" href="{p["slug"]}.html">{title}</a> <span class="mute">{year_of(p)}</span></p>'
                     f'</div></article>')
+    # 一张公有领域的大师剖面夹在第一、二个项目之间，示范目标线条；标明是占位参考、非本人作品
+    x = REFS[0]; f = ref_files(x['key']); i_ = 0 if lang == 'en' else 1
+    tag = 'Style reference, not my work' if lang == 'en' else '风格参考，非本人作品'
+    sets.insert(1, f'<article class="tset ref" style="--ar:{f["ar"]:.4f}"><div class="st">'
+                   f'<figure class="desk"><img class="ph" src="{r}{f["scan"]}" alt="" loading="lazy">'
+                   f'<div class="paper"><img class="ink" src="{r}{f["ink"]}" alt=""></div></figure>'
+                   f'<p class="tcap"><span class="mute">{tag}:</span> <a class="u" href="styles.html">{E(x["author"][i_])}, {x["year"]}</a></p>'
+                   f'</div></article>')
     rank = lambda p: HOME_ORDER.index(p['slug']) if p['slug'] in HOME_ORDER else len(HOME_ORDER)
     idx = ''.join(f'<li><a href="{p["slug"]}.html">{E(T(p["title"], lang))}</a><span class="mute">{year_of(p)}</span></li>'
                   for p in sorted(PROJECTS, key=rank) if p['_any'])
