@@ -147,10 +147,15 @@ h1, h2 { font: inherit; margin: 0; }
 .work figcaption span:last-child { margin-left: auto; }
 
 /* ── 项目页 ── */
-.head { padding-top: 12vh; padding-bottom: 40px; row-gap: 5vh; }
+/* 开屏：主图占满一屏（和首页第一屏同一个框），标题和信息表在图下面并排 */
+.phero { height: calc(100svh - var(--top)); min-height: 480px; padding: 0 var(--m); }
+.phero .frame { height: 100%; overflow: hidden; }
+.phero .frame img { width: 100%; height: 100%; object-fit: cover; }
+.head { padding-top: 28px; padding-bottom: 14vh; align-items: start; }
+.head.solo { padding-top: 12vh; padding-bottom: 40px; }
 .head h1 {
-  grid-column: 3 / 11;
-  font-weight: 500; font-size: clamp(40px, 5.4vw, 84px); line-height: 1.02; letter-spacing: -0.03em;
+  grid-column: 1 / 6;
+  font-weight: 500; font-size: clamp(24px, 2vw, 34px); line-height: 1.1; letter-spacing: -0.02em;
 }
 .facts { grid-column: 6 / 11; margin: 0; display: grid; grid-template-columns: 1fr 3fr; column-gap: var(--g); }
 .facts dt { color: var(--mute); }
@@ -227,7 +232,11 @@ h1, h2 { font: inherit; margin: 0; }
   .top nav .tabs { gap: 12px; margin-left: 0; padding: 7px 11px 6px; }
   .top nav .lang { margin-right: -6px; padding: 7px 6px 6px; }
   .top .name { margin-left: -8px; padding: 3px 9px 3px 8px; gap: 8px; }
-  .head { padding-top: 48px; padding-bottom: 32px; row-gap: 24px; }
+  .phero { height: auto; min-height: 0; }
+  .phero .frame { height: auto; }
+  .phero .frame img { height: auto; }
+  .head { padding-top: 20px; padding-bottom: 48px; row-gap: 18px; }
+  .head.solo { padding-top: 48px; padding-bottom: 32px; }
   .lead { font-size: 19px; }
   .index table { width: 100%; margin-left: 0; }
   .row { padding-bottom: 48px; row-gap: 20px; }

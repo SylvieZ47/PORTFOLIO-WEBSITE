@@ -327,18 +327,20 @@ def project(p, lang):
     ps = paras(p, lang)
     facts = [(S('program', lang), type_label(p, lang)), (S('location', lang), T(p.get('location'), lang)),
              (S('year', lang), year_of(p)), (S('area', lang), area(p, lang)),
-             (S('role', lang), T(p['role'], lang)), (S('track', lang), track_label(p, lang)),
+             (S('role', lang), T(p['role'], lang)),
              (S('note', lang), ', '.join(T(a, lang) for a in p.get('awards', [])))]
     fhtml = ''.join(f'<dt>{E(k)}</dt><dd>{E(v)}</dd>' for k, v in facts if v)
-    body = f'<section class="grid head">\n  <h1>{E(T(p["title"], lang))}</h1>\n  <dl class="facts">{fhtml}</dl>\n</section>\n\n'
+    # 开屏：主图占满一屏；标题缩小，放在图下面，和信息表并排（左标题、右信息）
+    head = f'<section class="grid head">\n  <h1>{E(T(p["title"], lang))}</h1>\n  <dl class="facts">{fhtml}</dl>\n</section>\n\n'
+    body = ''
     lead = f'<section class="grid row">\n  <div class="text lead" style="grid-column: 6 / 11"><p>{E(ps[0])}</p></div>\n</section>\n\n' if ps else ''
     if not p['_any']:
+        body += head.replace('class="grid head"', 'class="grid head solo"', 1)
         body += f'<section class="grid row">\n  <div class="soon">{S("soon", lang)}</div>\n</section>\n\n' + lead
         rest = ps[1:]
     else:
         c = p['_cover']
-        sp = 12 if c['ar'] >= 1.25 else span_for(c['ar'], 8)
-        body += f'<section class="grid row">\n  <figure class="fig" style="grid-column: 1 / {1 + sp}">{img_tag(c, r, sp, lazy=False)}</figure>\n</section>\n\n' + lead
+        body += f'<section class="phero">\n  <div class="frame">{img_tag(c, r, lazy=False)}</div>\n</section>\n\n' + head + lead
         imgs, dwgs, seq = list(p['_imgs']), list(p['_dwgs']), []
         if imgs: seq.append(imgs.pop(0))
         if dwgs: seq.append(dwgs.pop(0))
