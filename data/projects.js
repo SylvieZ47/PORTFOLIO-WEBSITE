@@ -576,7 +576,7 @@ window.PROJECT_TAXONOMY = {
 
 // CV
 window.CV_DATA = {
-  name: 'Sylvie Zhang',
+  name: 'Siqi Zhang',
   // 首页视频下面的那一段
   intro: {
     en: 'Architectural designer in Los Angeles. I run residential and small commercial projects end to end and care most about how people actually live in what gets built.',

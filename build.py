@@ -46,7 +46,7 @@ STR = {
     'soon_short': ('coming soon', '整理中'),
     'education': ('Education', '教育背景'), 'experience': ('Experience', '工作经历'), 'skills': ('Skills', '技能'),
     'awards': ('Awards', '获奖'), 'contact': ('Contact', '联系'), 'approach': ('Approach', '设计方法'),
-    'name': ('Sylvie Zhang', '张斯琦'), 'title': ('Architectural Designer', '建筑设计师'),
+    'name': ('Siqi Zhang', '张斯琦'), 'title': ('Architectural Designer', '建筑设计师'),
     'pdf': ('Download PDF', '下载 PDF'), 'email': ('Email', '邮箱'),
 }
 def SEP(lang): return ', ' if lang == 'en' else '，'
