@@ -38,20 +38,31 @@ PROJECTS, TAX, CV = D['PROJECTS'], D['PROJECT_TAXONOMY'], D['CV_DATA']
 STR = {
     'work': ('Work', '作品'), 'about': ('About', '关于'), 'cv': ('CV', '简历'),
     'index': ('Index', '索引'), 'n_projects': ('{} projects', '{} 个项目'),
-    'expand': (' — click to expand', ' — 点击展开'), 'collapse': (' — click to collapse', ' — 点击收起'),
+    'expand': (' — click to expand', '（点击展开）'), 'collapse': (' — click to collapse', '（点击收起）'),
     'program': ('Program', '类型'), 'location': ('Location', '地点'), 'year': ('Year', '年份'),
-    'area': ('Area', '面积'), 'role': ('Role', '角色'), 'track': ('Track', '类别'), 'note': ('Note', '备注'),
-    'all_work': ('All work', '全部作品'), 'all_projects': ('All projects', '全部项目'), 'next': ('Next', '下一个'),
+    'area': ('Area', '面积'), 'role': ('Role', '职责'), 'track': ('Track', '类别'), 'note': ('Recognition', '荣誉'),
+    'all_work': ('All work', '全部作品'), 'all_projects': ('All work', '全部作品'), 'next': ('Next', '下一个'),
     'soon': ('Drawings and images in preparation. Coming soon.', '图纸与图片整理中，敬请期待。'),
     'soon_short': ('coming soon', '整理中'),
-    'education': ('Education', '教育'), 'experience': ('Experience', '经历'), 'skills': ('Skills', '技能'),
-    'awards': ('Awards', '获奖'), 'pdf': ('Download PDF', '下载 PDF'), 'email': ('Email', '邮箱'),
+    'education': ('Education', '教育背景'), 'experience': ('Experience', '工作经历'), 'skills': ('Skills', '技能'),
+    'awards': ('Awards', '获奖'), 'contact': ('Contact', '联系'), 'approach': ('Approach', '设计方法'),
+    'name': ('Sylvie Zhang', '张斯琦'), 'title': ('Architectural Designer', '建筑设计师'),
+    'pdf': ('Download PDF', '下载 PDF'), 'email': ('Email', '邮箱'),
 }
+def SEP(lang): return ', ' if lang == 'en' else '，'
 def S(key, lang): return STR[key][0 if lang == 'en' else 1]
+def zh_punct(s):
+    """中文里的直引号换成弯引号“”，成对替换。"""
+    out, op = [], True
+    for ch in s:
+        if ch == '"': out.append('“' if op else '”'); op = not op
+        else: out.append(ch)
+    return ''.join(out)
 def T(v, lang):
     if v is None: return ''
     if isinstance(v, str): return v
-    return v.get(lang) or v.get('en') or ''
+    t = v.get(lang) or v.get('en') or ''
+    return zh_punct(t) if lang == 'zh' and lang in v else t
 def E(s): return html.escape(str(s), quote=True)
 
 # ── 图片：缩到网页尺寸，写进 docs/img/，记下比例 ─────────────
@@ -99,13 +110,21 @@ def nice_label(fname):
     s = re.sub(r'^(dwg|img)_(\d+_)?', '', os.path.splitext(fname)[0])
     s = re.sub(r'[-_]+', ' ', s).strip()
     for a, b in ((r'\bf(\d)\b', r'Floor \1'), (r'\belev\b', 'elevation'), (r'\btyp\b', 'type'), (r'\bnorht\b', 'north'),
-                 (r'\bexploed\b', 'exploded axon')):
+                 (r'\bexploed\b', 'exploded axon'), (r'\bexploded$', 'exploded axon')):
         s = re.sub(a, b, s)
     return s[:1].upper() + s[1:]
 
+CAP_ZH = {   # 只有英文的图注，中文版用这张表
+    'Interior': '室内', 'Site': '场地', 'Perspective section': '剖透视', 'Night view': '夜景', 'Exploded': '爆炸轴测',
+    'Exploded axon': '爆炸轴测', 'Vicinity map': '区位图', 'Map': '地图', 'Form generation': '形体生成', 'Model scene': '模型场景',
+    'Laundry': '洗衣房', 'Corridor': '走廊', 'Bath module': '洗浴模块', 'Axis': '轴线', 'Circulation': '流线',
+    'Lanterns on water': '水上河灯', 'Bionic skeleton': '仿生骨架', 'Section': '剖面', 'Elevation': '立面',
+    'Toilet section': '厕所剖面', 'Toilet & shower section': '厕所淋浴剖面', 'Plan / model': '平面与模型',
+}
 def clean_cap(label, lang):
     s = re.sub(r'^\s*\d+\s*[·.]\s*', '', T(label, lang))
     s = re.sub(r'\s*\d+\s*[:：]\s*\d+\s*$', '', s)
+    if lang == 'zh' and isinstance(label, str): s = CAP_ZH.get(s, s)
     return '' if re.fullmatch(r'(?i)render(ing)?|photo', s) else s
 
 for p in PROJECTS:
@@ -116,7 +135,7 @@ for p in PROJECTS:
     cover_src = p.get('cover') if asset(p.get('cover')) else find(r'^img_00_cover|_cover\.')
     p['_index'] = asset(p.get('indexCover')) or asset(find(r'index-cover'))
     p['_icon'] = asset(find(r'^icon(_\d+)?\.'))
-    listed = {x.get('src') for x in p.get('images', []) + p.get('drawings', [])} | {p.get('cover'), p.get('indexCover')}
+    listed = {x.get('src') for x in p.get('images', []) + p.get('drawings', []) + p.get('more', [])} | {p.get('cover'), p.get('indexCover')}
     imgs, dwgs = [], []
     for x in p.get('images', []):
         a = asset(x.get('src'))
@@ -130,8 +149,9 @@ for p in PROJECTS:
         if f.startswith('dwg_'): dwgs.append({'a': asset(src), 'cap': nice_label(f), 'kind': 'dwg'})
         elif f.startswith('img_'): imgs.append({'a': asset(src), 'cap': nice_label(f), 'kind': 'img'})
     p['_imgs'], p['_dwgs'] = imgs, dwgs
+    p['_more'] = [{'a': asset(x['src']), 'cap': x.get('label'), 'kind': 'dwg' if '/dwg_' in x['src'] else 'img'} for x in p.get('more', []) if asset(x.get('src'))]
     if not p['_cover'] and imgs: p['_cover'] = imgs.pop(0)['a']
-    p['_any'] = bool(p['_cover'] or imgs or dwgs)
+    p['_any'] = bool(p['_cover'] or imgs or dwgs or p['_more'])
 
 def year_of(p): return p.get('year_range') or str(p['year'])
 def region_of(p, lang):
@@ -155,14 +175,18 @@ def shell(lang, page, title, body, desc=''):
     r = '' if lang == 'en' else '../'
     other = (f'zh/{page}', 'CN') if lang == 'en' else (f'../{page}', 'EN')
     nav = ''.join(f'<a href="{k}.html" class="{"on" if page == k + ".html" else "u"}">{S(k, lang)}</a>' for k in ('work', 'about', 'cv'))
-    full = f'{title} — Sylvie Zhang' if title else 'Sylvie Zhang — Architectural Designer'
+    full = f'{title} — {S("name", lang)}' if title else f'{S("name", lang)} — {S("title", lang)}'
+    d = E(desc or T(CV['intro'], lang))
     return f'''<!doctype html>
 <html lang="{'en' if lang == 'en' else 'zh-Hans'}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{E(full)}</title>
-<meta name="description" content="{E(desc or T(CV['intro'], lang))}">
+<meta name="description" content="{d}">
+<meta property="og:title" content="{E(full)}">
+<meta property="og:description" content="{d}">
+<meta property="og:type" content="website">
 <link rel="icon" type="image/png" href="{r}img/sig-s.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -172,7 +196,7 @@ def shell(lang, page, title, body, desc=''):
 <body>
 
 <header class="grid top">
-  <a class="name" href="index.html"><img class="sig" src="{r}img/sig-s.png" alt="">Sylvie Zhang</a>
+  <a class="name" href="index.html"><img class="sig" src="{r}img/sig-s.png" alt="">{S("name", lang)}</a>
   <nav><span class="tabs">{nav}</span><a class="lang" href="{other[0]}">{other[1]}</a></nav>
 </header>
 
@@ -181,12 +205,6 @@ def shell(lang, page, title, body, desc=''):
 </body>
 </html>
 '''
-
-def foot(lang, left=None):
-    """每页最下面的一排三个元素：左下角、正文起始线、右下角。"""
-    left = 'Sylvie (Siqi) Zhang' if left is None else left
-    mail = E(CV["contact"]["email"])
-    return f'<footer class="grid foot caps">\n  <span>{left}</span>\n  <a class="u" href="mailto:{mail}">{mail}</a>\n  <span>2026</span>\n</footer>\n'
 
 def home_layout(items):
     """items: [(宽 vw, 高 vw)]。返回每张图左上角相对页面中线的 (x, y) 和总高，单位 vw。"""
@@ -203,6 +221,12 @@ def home_layout(items):
     top = min(q[1] - h / 2 for q, (w, h) in zip(c, items))
     out = [(q[0] - w / 2, q[1] - h / 2 - top) for q, (w, h) in zip(c, items)]
     return out, max(y + h for (x, y), (w, h) in zip(out, items))
+
+def contact_links(lang):
+    c = CV['contact']
+    return (f'<a class="u" href="mailto:{E(c["email"])}">{S("email", lang)}</a><br>'
+            f'<a class="u" href="https://{E(c["linkedin"])}">{"LinkedIn" if lang == "en" else "领英"}</a><br>'
+            f'<a class="u" href="work.html">{S("all_projects", lang)}</a>')
 
 # ── 首页 ────────────────────────────────────────────────
 def home(lang):
@@ -230,13 +254,9 @@ def home(lang):
                      f'data-ar="{rv["ar"]:.4f}" data-title="{title}" data-year="{year_of(p)}">'
                      f'<img class="d" src="{r}{d["small"]}" width="{d["w"]}" height="{d["h"]}" alt="{title}" loading="lazy">'
                      f'<span class="mob">{title}</span></a>')
-    c = CV['contact']
     rows = ''.join(f'<div class="r"><h2 class="caps">{E(T(x["label"], lang))}</h2><p>{E(T(x["text"], lang))}</p></div>' for x in CV['closing'])
-    links = (f'<a class="u" href="mailto:{E(c["email"])}">{S("email", lang)}</a><br>'
-             f'<a class="u" href="https://{E(c["linkedin"])}">{"LinkedIn" if lang == "en" else "领英"}</a><br>'
-             f'<a class="u" href="work.html">{S("all_projects", lang)}</a>')
-    rows += f'<div class="r"><h2 class="caps">{"Contact" if lang == "en" else "联系"}</h2><p>{links}</p></div>'
-    rows += f'<div class="r pic"><img class="seal" src="{r}img/sig-c.png" alt="Sylvie (Siqi) Zhang"></div>'
+    rows += f'<div class="r"><h2 class="caps">{S("contact", lang)}</h2><p>{contact_links(lang)}</p></div>'
+    rows += f'<div class="r pic"><img class="seal" src="{r}img/sig-c.png" alt="{S("name", lang)}"></div>'
     body = f"""{hero}
 
 <section class="field" style="--h:{field_h:.2f}vw">
@@ -256,14 +276,14 @@ def work(lang):
     rows = []
     for p in sorted(PROJECTS, key=lambda p: -p['year']):
         role = T(p['role'], lang)
-        status = ', '.join(T(a, lang) for a in ([p['status']] if p.get('status') else []) + p.get('awards', []))
+        status = SEP(lang).join(T(a, lang) for a in ([p['status']] if p.get('status') else []) + p.get('awards', []))
         rows.append(f'      <tr><td>{p["year"]}</td><td><a class="u" href="{p["slug"]}.html">{E(T(p["title"], lang))}</a></td>'
-                    f'<td>{E(", ".join(x for x in (type_label(p, lang), region_of(p, lang)) if x))}</td><td>{E(role)}</td><td>{E(status)}</td></tr>')
+                    f'<td>{E(SEP(lang).join(x for x in (type_label(p, lang), region_of(p, lang)) if x))}</td><td>{E(role)}</td><td>{E(status)}</td></tr>')
     figs = []
     for p in PROJECTS:
         a = p['_cover']
         if not a: continue
-        sub = ', '.join(x for x in (type_label(p, lang), T(p.get('location'), lang)) if x)
+        sub = SEP(lang).join(x for x in (type_label(p, lang), T(p.get('location'), lang)) if x)
         figs.append(f'  <figure class="work{" tall" if a["ar"] < 1 else ""}">\n    <a href="{p["slug"]}.html">{img_tag(a, r, 8)}</a>\n'
                     f'    <figcaption><span>{E(T(p["title"], lang))}</span><span class="mute">{E(sub)}</span>'
                     f'<span class="mute">{year_of(p)}</span></figcaption>\n  </figure>')
@@ -278,9 +298,7 @@ def work(lang):
 
 <main class="grid works">
 {chr(10).join(figs)}
-</main>
-
-{foot(lang)}'''
+</main>'''
     return shell(lang, 'work.html', S('work', lang), body)
 
 # ── 项目页：错落排版 ─────────────────────────────────────
@@ -328,7 +346,7 @@ def project(p, lang):
     facts = [(S('program', lang), type_label(p, lang)), (S('location', lang), T(p.get('location'), lang)),
              (S('year', lang), year_of(p)), (S('area', lang), area(p, lang)),
              (S('role', lang), T(p['role'], lang)), (S('track', lang), track_label(p, lang)),
-             (S('note', lang), ', '.join(T(a, lang) for a in p.get('awards', [])))]
+             (S('note', lang), SEP(lang).join(T(a, lang) for a in p.get('awards', [])))]
     fhtml = ''.join(f'<dt>{E(k)}</dt><dd>{E(v)}</dd>' for k, v in facts if v)
     body = f'<section class="grid head">\n  <h1>{E(T(p["title"], lang))}</h1>\n  <dl class="facts">{fhtml}</dl>\n</section>\n\n'
     lead = f'<section class="grid row">\n  <div class="text lead" style="grid-column: 6 / 11"><p>{E(ps[0])}</p></div>\n</section>\n\n' if ps else ''
@@ -354,13 +372,13 @@ def project(p, lang):
                 texts[k] = rest[j]
             rest = rest[len(texts):]
             body += '<section class="grid stagger">\n' + '\n'.join(stagger(seq, texts, lang, r)) + '\n</section>\n\n'
-        if len(seq) < 2:
-            body += f'<section class="grid row">\n  <div class="text mute" style="grid-column: 6 / 11"><p>{S("soon", lang)}</p></div>\n</section>\n\n'
+        if p['_more']:                                   # 后补的图单独接在后面，前面排好的不动
+            body += '<section class="grid stagger">\n' + '\n'.join(stagger(p['_more'], {}, lang, r)) + '\n</section>\n\n'
     if rest:
         body += '<section class="grid row">\n  <div class="text" style="grid-column: 6 / 11">' + ''.join(f'<p>{E(x)}</p>' for x in rest) + '</div>\n</section>\n\n'
     nx = PROJECTS[(PROJECTS.index(p) + 1) % len(PROJECTS)]
     body += (f'<nav class="grid pager caps">\n  <a class="u" href="work.html">← {S("all_work", lang)}</a>\n'
-             f'  <a class="u" href="{nx["slug"]}.html">{S("next", lang)}: {E(T(nx["title"], lang))} →</a>\n</nav>\n\n' + foot(lang))
+             f'  <a class="u" href="{nx["slug"]}.html">{S("next", lang)}{": " if lang == "en" else "："}{E(T(nx["title"], lang))} →</a>\n</nav>\n\n')
     return shell(lang, f'{p["slug"]}.html', T(p['title'], lang), body, T(p.get('summary'), lang))
 
 # ── About / CV ─────────────────────────────────────────
@@ -377,11 +395,14 @@ def about(lang):
 </section>
 
 <section class="grid list">
-  <h2 class="caps">{'Approach' if lang == 'en' else '方法'}</h2>
+  <h2 class="caps">{S('approach', lang)}</h2>
   <div class="rows">{rows}</div>
 </section>
 
-{foot(lang)}"""
+<section class="grid list">
+  <h2 class="caps">{S('contact', lang)}</h2>
+  <div class="rows"><div class="r"><span></span><span>{contact_links(lang)}</span></div></div>
+</section>"""
     return shell(lang, 'about.html', S('about', lang), body)
 
 def cv(lang):
@@ -396,10 +417,10 @@ def cv(lang):
     if os.path.isfile('assets/cv.pdf'):
         body += f'<section class="grid list plain">\n  <div class="rows"><a class="u" href="{r}cv.pdf">↓ {S("pdf", lang)}</a></div>\n</section>\n\n'
     body += block(S('education', lang), [(e['year'], T(e['school'], lang), T(e['degree'], lang), T(e.get('note'), lang)) for e in CV['education']])
-    body += block(S('experience', lang), [(e['year'], T(e['firm'], lang), T(e['role'], lang), T(e.get('note'), lang)) for e in CV['experience']])
-    body += block(S('skills', lang), [(T(s['group'], lang), ', '.join(s['items']), '') for s in CV['skills']])
-    body += block(S('awards', lang), [(str(a['year']), a[lang] if lang in a else a['en'], '') for a in CV['awards']])
-    return shell(lang, 'cv.html', S('cv', lang), body + foot(lang))
+    body += block(S('experience', lang), [(T(e['year'], lang), T(e['firm'], lang), T(e['role'], lang), T(e.get('note'), lang)) for e in CV['experience']])
+    body += block(S('skills', lang), [(T(s['group'], lang), '、'.join(T(x, lang) for x in s['items']) if lang == 'zh' else ', '.join(T(x, lang) for x in s['items']), '') for s in CV['skills']])
+    body += block(S('awards', lang), [(str(a['year']), zh_punct(a['zh']) if lang == 'zh' and 'zh' in a else a['en'], '') for a in CV['awards']])
+    return shell(lang, 'cv.html', S('cv', lang), body)
 
 # ── 写文件 ──────────────────────────────────────────────
 def write(path, s):

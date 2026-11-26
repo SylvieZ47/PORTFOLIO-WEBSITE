@@ -1,0 +1,15 @@
+# 不对外发布的文件：源素材、构建脚本、内部笔记
+/assets
+/data
+/src
+/build.py
+/serve.js
+/uploads
+/screenshots
+/directions
+/tweaks-panel.jsx
+/github.md
+/还缺什么.md
+/projects info - Sheet1.csv
+/.claude
+/__pycache__

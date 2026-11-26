@@ -52,7 +52,7 @@ h1, h2 { font: inherit; margin: 0; }
   background: rgba(255, 255, 255, .86); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
   box-shadow: 0 1px 14px rgba(0, 0, 0, .06); }
 .top nav .on { font-weight: 600; }
-.top nav .lang { margin-left: auto; margin-right: -12px; padding: 8px 12px 7px; border-radius: 999px; color: var(--faint); }
+.top nav .lang { margin-left: auto; margin-right: -12px; padding: 8px 12px 7px; border-radius: 999px; color: #555; }
 
 /* ── 首页第一屏：视频位 + 简介，正好一屏 ── */
 .hero {
@@ -100,10 +100,6 @@ h1, h2 { font: inherit; margin: 0; }
 .closing p { margin: 0; line-height: 1.75; }
 
 /* ── 页脚：三个元素把页面底边框住——左下角、正文起始线、右下角 ── */
-.foot { padding-top: 24px; padding-bottom: 28px; align-items: end; }
-.foot > :nth-child(1) { grid-column: 1 / 6; }
-.foot > :nth-child(2) { grid-column: 4 / 10; justify-self: center; }
-.foot > :nth-child(3) { grid-column: 11 / 13; justify-self: end; }
 .closing .pic { align-self: stretch; position: relative; }
 .closing .seal { position: absolute; left: 0; top: 5px; bottom: 7px; height: calc(100% - 12px); width: auto; }
 .pager { padding-top: 24px; padding-bottom: 9vh; }
@@ -157,7 +153,7 @@ h1, h2 { font: inherit; margin: 0; }
 .facts dd { margin: 0; }
 .fig { margin: 0; }
 .text { font-size: 16px; line-height: 1.6; }
-.lead { font-size: 22px; line-height: 1.42; letter-spacing: -0.005em; }
+.lead { font-size: 26px; line-height: 1.38; letter-spacing: -0.01em; }
 .text p:last-child { margin-bottom: 0; }
 .row { padding-bottom: 14vh; align-items: start; }
 .stagger { row-gap: 16vh; padding-bottom: 18vh; }
@@ -169,9 +165,9 @@ h1, h2 { font: inherit; margin: 0; }
   display: flex; align-items: flex-end; padding: 20px; color: var(--mute);
 }
 
-/* ── About / CV：标题放得很大，和左上角的名字拉开对比 ── */
-.big { padding-top: 5vh; padding-bottom: 7vh; }
-.big h1 { grid-column: 1 / 13; font-weight: 500; font-size: clamp(50px, 8vw, 200px); line-height: .9; letter-spacing: -0.045em; margin-left: -0.05em; }
+/* ── About / CV：标题和项目页标题同一个字号 ── */
+.big { padding-top: 12vh; padding-bottom: 40px; }
+.big h1 { grid-column: 1 / 6; font-weight: 500; font-size: clamp(24px, 2vw, 34px); line-height: 1.1; letter-spacing: -0.02em; }
 .about .portrait { grid-column: 1 / 5; }
 .about .portrait img { max-width: 300px; margin-left: -10px; }
 .about .bio { grid-column: 6 / 11; }
@@ -189,7 +185,8 @@ h1, h2 { font: inherit; margin: 0; }
 /* ── 十字光标：平时小十字，移到图上拉成通长的线 ── */
 @media (hover: hover) and (pointer: fine) {
   .has-xh, .has-xh * { cursor: none; }
-  .xh { position: fixed; left: 0; top: 0; z-index: 99; pointer-events: none; mix-blend-mode: difference; --l: 23px; }
+  .xh { position: fixed; left: 0; top: 0; z-index: 99; pointer-events: none; mix-blend-mode: difference; --l: 23px; opacity: 0; transition: opacity .15s; }
+  .has-xh .xh { opacity: 1; }   /* 鼠标没进页面、或移出页面时不显示，不再停在左上角 */
   .xh::before, .xh::after { content: ""; position: absolute; background: #fff; transition: all .28s cubic-bezier(.2,.7,.2,1); }
   .xh::before { height: 1px; width: var(--l); left: calc(var(--l) / -2); top: 0; }
   .xh::after  { width: 1px; height: var(--l); top: calc(var(--l) / -2); left: 0; }
@@ -219,16 +216,15 @@ h1, h2 { font: inherit; margin: 0; }
   .reveal { display: none; }
   .closing { padding-top: 96px; padding-bottom: 40px; row-gap: 36px; }
   .about { padding-bottom: 72px; }
-  .foot, .pager { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; }
+  .pager { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; }
   .closing .pic { align-self: auto; }
   .closing .seal { position: static; height: auto; width: 96px; }
-  .big h1 { font-size: 22vw; }
   .top nav { gap: 8px; font-size: 11px; }
   .top nav .tabs { gap: 12px; margin-left: 0; padding: 7px 11px 6px; }
   .top nav .lang { margin-right: -6px; padding: 7px 6px 6px; }
   .top .name { margin-left: -8px; padding: 3px 9px 3px 8px; gap: 8px; }
   .head { padding-top: 48px; padding-bottom: 32px; row-gap: 24px; }
-  .lead { font-size: 19px; }
+  .lead { font-size: 21px; }
   .index table { width: 100%; margin-left: 0; }
   .row { padding-bottom: 48px; row-gap: 20px; }
   .stagger, .works { row-gap: 32px; }
