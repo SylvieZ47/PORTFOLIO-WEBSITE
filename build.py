@@ -13,6 +13,7 @@ os.chdir(ROOT)
 OUT = '.'
 HERO_PROJECT = 'the-ark'          # 首页第一屏用哪个项目的封面（放了 assets/home.mp4 就改用视频）
 HERO_VIDEO = 'assets/home.mp4'
+DOT_SOURCES = ['westfall-hillside-house', 'the-ark', 'beck-corner-apartment', '798-artist-district', 'seedlings']   # 网点开场随机挑一张
 # 首页散点的排列顺序（只管首页；没列的项目排在后面）。第几个就落在第几个位置
 HOME_ORDER = ['798-artist-district', 'downstairs-bazaar', 'seedlings', 'river-lantern', 'westfall-hillside-house',
               'the-ark', 'ashton-house-remodel', 'pku-marxism-school-building', 'beck-corner-apartment']
@@ -234,12 +235,16 @@ def home(lang):
     hp = next(p for p in PROJECTS if p['slug'] == HERO_PROJECT)
     cap = f'<span><a href="{hp["slug"]}.html">{E(T(hp["title"], lang))}</a> <span class="mute">{year_of(hp)}</span></span>'
     intro = f'<p>{E(T(CV["intro"], lang))}</p>'
-    if os.path.isfile(HERO_VIDEO):
-        os.makedirs(f'{OUT}/img', exist_ok=True); shutil.copyfile(HERO_VIDEO, f'{OUT}/img/home.mp4')
-        media = f'<video src="{r}img/home.mp4" poster="{r}{hp["_cover"]["full"]}" muted playsinline preload="auto"></video>'
-        hero = f'<div class="hero-scroll">\n<section class="hero">\n  <div class="frame">{media}</div>\n  <div class="grid cap">{cap}{intro}</div>\n</section>\n</div>'
-    else:
-        hero = f'<section class="hero">\n  <div class="frame">{img_tag(hp["_cover"], r, lazy=False)}</div>\n  <div class="grid cap">{cap}{intro}</div>\n</section>'
+    # 实验：网点开场。一张真实项目图被画成网点（点距 9px，和背景 18px 网格对齐），往下滚网点缩没，露出背景网格
+    srcs = []
+    for slug in DOT_SOURCES:
+        q = next((x for x in PROJECTS if x['slug'] == slug), None)
+        if q and q['_cover']:
+            srcs.append({'img': r + q['_cover']['small'], 'href': q['slug'] + '.html', 't': T(q['title'], lang), 'y': year_of(q)})
+    data = E(json.dumps(srcs, ensure_ascii=False))
+    hero = (f'<section class="dots" data-src="{data}">\n  <div class="stage">\n    <canvas aria-hidden="true"></canvas>\n'
+            f'    <div class="grid dcap"><h1 class="dname">{S("name", lang)}</h1><p class="dintro">{E(T(CV["intro"], lang))}</p>'
+            f'<a class="dsrc mute" href="#"></a></div>\n  </div>\n</section>')
     marks = []
     rank = lambda p: HOME_ORDER.index(p['slug']) if p['slug'] in HOME_ORDER else len(HOME_ORDER)
     shown = [p for p in sorted(PROJECTS, key=rank) if p['_any']]

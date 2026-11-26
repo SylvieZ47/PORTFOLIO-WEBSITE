@@ -250,3 +250,23 @@ h1, h2 { font: inherit; margin: 0; }
   .index td:last-child { width: 24%; }
   .list { row-gap: 12px; }
 }
+
+/* ── 实验：网点开场。真实项目图画成网点，网点和背景网格同一套格子；往下滚网点缩没，只剩网格 ── */
+.dots { height: 210vh; margin-top: calc(var(--top) * -1); }
+.dots .stage { position: sticky; top: 0; height: 100svh; min-height: 520px; overflow: hidden; }
+.dots canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+.dcap { position: absolute; left: 0; right: 0; bottom: 0; padding-bottom: 34px; align-items: end; transition: opacity .2s; }
+.dname { grid-column: 1 / 8; font-weight: 400; font-size: clamp(54px, 8.4vw, 150px); line-height: .92; letter-spacing: -.045em; margin-left: -.04em; }
+.dintro { grid-column: 9 / 12; margin: 0 0 .5em; font-size: 15px; }
+.dsrc { grid-column: 12 / 13; justify-self: end; text-align: right; font-size: 12px; margin-bottom: .55em; }
+.dsrc:hover { color: var(--ink); }
+/* 大名字还在屏幕上时，左上角的名字先藏起来，滚下去再出现 */
+.top .name { transition: opacity .3s; }
+.dots-top .top .name { opacity: 0; pointer-events: none; }
+.dots + .field { margin-top: 6vh; }
+@media (max-width: 800px) {
+  .dots { height: 170vh; }
+  .dname { font-size: 56px; }
+  .dcap { row-gap: 14px; }
+  .dsrc { justify-self: start; text-align: left; }
+}

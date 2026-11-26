@@ -53,6 +53,11 @@ h1, h2 { font: inherit; margin: 0; }
 .top .name { grid-column: 1 / 6; justify-self: start; font-weight: 500; font-size: 18px; display: flex; align-items: center; gap: 12px;
   margin-left: -12px; padding: 4px 14px 4px 12px; border-radius: 999px; }
 .top .sig { width: 40px; height: 40px; }
+/* 头像彩蛋：鼠标移上去向左偏 15°、底变黑，线条反白；点击无效果 */
+.top .av { display: block; border-radius: 50%; transition: transform .35s cubic-bezier(.3,1.6,.5,1), background-color .2s; }
+.top .av .sig { transition: filter .2s; }
+.top .name:hover .av { transform: rotate(-15deg); background: #111; }
+.top .name:hover .av .sig { filter: invert(1); }
 /* 名字和 CN 也垫同样的白底，但不加阴影：白底上看不出来，压到图上才显出来 */
 .top .name, .top nav .lang { background: rgba(255, 255, 255, .86); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
 .top nav { grid-column: 6 / 13; display: flex; gap: 30px; align-items: center; text-transform: uppercase; font-size: 12px; letter-spacing: .09em; }
@@ -244,4 +249,24 @@ h1, h2 { font: inherit; margin: 0; }
   .index td:nth-child(4) { width: auto; }
   .index td:last-child { width: 24%; }
   .list { row-gap: 12px; }
+}
+
+/* ── 实验：网点开场。真实项目图画成网点，网点和背景网格同一套格子；往下滚网点缩没，只剩网格 ── */
+.dots { height: 210vh; margin-top: calc(var(--top) * -1); }
+.dots .stage { position: sticky; top: 0; height: 100svh; min-height: 520px; overflow: hidden; }
+.dots canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+.dcap { position: absolute; left: 0; right: 0; bottom: 0; padding-bottom: 34px; align-items: end; transition: opacity .2s; }
+.dname { grid-column: 1 / 8; font-weight: 400; font-size: clamp(54px, 8.4vw, 150px); line-height: .92; letter-spacing: -.045em; margin-left: -.04em; }
+.dintro { grid-column: 9 / 12; margin: 0 0 .5em; font-size: 15px; }
+.dsrc { grid-column: 12 / 13; justify-self: end; text-align: right; font-size: 12px; margin-bottom: .55em; }
+.dsrc:hover { color: var(--ink); }
+/* 大名字还在屏幕上时，左上角的名字先藏起来，滚下去再出现 */
+.top .name { transition: opacity .3s; }
+.dots-top .top .name { opacity: 0; pointer-events: none; }
+.dots + .field { margin-top: 6vh; }
+@media (max-width: 800px) {
+  .dots { height: 170vh; }
+  .dname { font-size: 56px; }
+  .dcap { row-gap: 14px; }
+  .dsrc { justify-self: start; text-align: left; }
 }
