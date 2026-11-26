@@ -87,3 +87,34 @@
   v.addEventListener('loadedmetadata', tick);
   tick();
 })();
+
+// ── 实验：剖切线跟着光标。触屏上改成跟着滚动，图滚到屏幕中间时切到一半 ──
+(() => {
+  const cuts = [...document.querySelectorAll('.mark.cut')];
+  if (!cuts.length) return;
+  const fine = matchMedia('(hover: hover) and (pointer: fine)').matches;
+  if (fine) {
+    for (const m of cuts) {
+      const cv = m.querySelector('.cv');
+      m.addEventListener('pointermove', (e) => {
+        const r = cv.getBoundingClientRect();
+        const c = Math.max(0, Math.min(100, (e.clientX - r.left) / r.width * 100));
+        m.style.setProperty('--c', c.toFixed(2) + '%');
+        m.classList.add('on');
+      });
+      m.addEventListener('pointerleave', () => { m.classList.remove('on'); m.style.setProperty('--c', '0%'); });
+    }
+    return;
+  }
+  let raf = 0;
+  const tick = () => {
+    raf = 0;
+    for (const m of cuts) {
+      const r = m.getBoundingClientRect();
+      const t = (innerHeight * .85 - r.top) / (innerHeight * .7);
+      m.style.setProperty('--c', (Math.max(0, Math.min(1, t)) * 100).toFixed(1) + '%');
+    }
+  };
+  addEventListener('scroll', () => { if (!raf) raf = requestAnimationFrame(tick); }, { passive: true });
+  tick();
+})();

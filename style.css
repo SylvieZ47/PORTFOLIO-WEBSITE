@@ -53,6 +53,11 @@ h1, h2 { font: inherit; margin: 0; }
 .top .name { grid-column: 1 / 6; justify-self: start; font-weight: 500; font-size: 18px; display: flex; align-items: center; gap: 12px;
   margin-left: -12px; padding: 4px 14px 4px 12px; border-radius: 999px; }
 .top .sig { width: 40px; height: 40px; }
+/* 头像彩蛋：鼠标移上去向左偏 15°、底变黑，线条反白；点击无效果 */
+.top .av { display: block; border-radius: 50%; transition: transform .35s cubic-bezier(.3,1.6,.5,1), background-color .2s; }
+.top .av .sig { transition: filter .2s; }
+.top .name:hover .av { transform: rotate(-15deg); background: #111; }
+.top .name:hover .av .sig { filter: invert(1); }
 /* 名字和 CN 也垫同样的白底，但不加阴影：白底上看不出来，压到图上才显出来 */
 .top .name, .top nav .lang { background: rgba(255, 255, 255, .86); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
 .top nav { grid-column: 6 / 13; display: flex; gap: 30px; align-items: center; text-transform: uppercase; font-size: 12px; letter-spacing: .09em; }
@@ -244,4 +249,26 @@ h1, h2 { font: inherit; margin: 0; }
   .index td:nth-child(4) { width: auto; }
   .index td:last-child { width: 24%; }
   .list { row-gap: 12px; }
+}
+
+/* ── 实验：剖切。每个项目是封面的钢笔描图；光标是一条剖切线（点划线 + 两端看向箭头），
+   线左边切开露出原图 ── */
+.mark.cut .cv { position: relative; display: block; }
+.mark.cut .ink { display: block; width: 100%; height: 100%; clip-path: inset(0 0 0 var(--c, 0%)); transition: clip-path .18s ease-out; }
+.mark.cut .ph { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+  clip-path: inset(0 calc(100% - var(--c, 0%)) 0 0); transition: clip-path .18s ease-out; }
+.mark.cut .sl { position: absolute; top: -18px; bottom: -18px; left: var(--c, 0%); width: 1px; opacity: 0; transition: opacity .2s, left .18s ease-out;
+  background: repeating-linear-gradient(to bottom, #111 0 16px, transparent 16px 20px, #111 20px 22px, transparent 22px 26px); pointer-events: none; }
+.mark.cut .sl i { position: absolute; left: -16px; font: 500 10px/1 "Instrument Sans", sans-serif; letter-spacing: .06em; font-style: normal; }
+.mark.cut .sl i:first-child { top: -14px; }
+.mark.cut .sl i:last-child { bottom: -14px; }
+/* 看向箭头：剖切线两端各一个朝左的实心三角 */
+.mark.cut .sl i::after { content: ""; position: absolute; left: 10px; top: 1px; border: 4px solid transparent; border-right: 7px solid #111; border-left: 0; }
+.mark.cut .cap { display: block; padding-top: 26px; font-size: 13px; opacity: 0; transition: opacity .25s; }
+.mark.cut.on .sl, .mark.cut.on .cap { opacity: 1; }
+.mark.cut.on .ink, .mark.cut.on .ph, .mark.cut.on .sl { transition-duration: .06s; }
+@media (hover: none), (max-width: 800px) {
+  .mark.cut .sl { opacity: .9; }
+  .mark.cut .cap { opacity: 1; padding-top: 22px; }
+  .mark.cut .mob { display: none; }
 }

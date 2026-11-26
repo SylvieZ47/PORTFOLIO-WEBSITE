@@ -206,6 +206,22 @@ def shell(lang, page, title, body, desc=''):
 </html>
 '''
 
+# ── 实验：剖切。src/ink.py 把每个项目的封面描成钢笔线稿（透明 PNG，和原图同尺寸），
+#    放在原图上面；光标是一条剖切线，线左边露出原图 ──
+INK_META = json.load(open('assets/ink/meta.json')) if os.path.isfile('assets/ink/meta.json') else {}
+INK_SKIP = {'the-ark'}   # 曲面太多，直线描不出来，先不放
+def ink_of(p):
+    folder = p.get('folder') or p['slug']
+    if folder in INK_SKIP or folder not in INK_META: return None
+    src = f'assets/ink/{folder}.png'
+    dst = f'{OUT}/img/ink/{folder}.png'
+    with Image.open(src) as im:
+        w, h = im.size
+        if not (os.path.isfile(dst) and os.path.getmtime(dst) >= os.path.getmtime(src)):
+            os.makedirs(os.path.dirname(dst), exist_ok=True)
+            im.resize((1100, round(1100 * h / w)), Image.LANCZOS).save(dst, optimize=True)
+    return {'ink': dst[len(OUT) + 1:], 'photo': asset(INK_META[folder]), 'ar': w / h}
+
 def home_layout(items):
     """items: [(宽 vw, 高 vw)]。返回每张图左上角相对页面中线的 (x, y) 和总高，单位 vw。"""
     import math
@@ -242,18 +258,18 @@ def home(lang):
         hero = f'<section class="hero">\n  <div class="frame">{img_tag(hp["_cover"], r, lazy=False)}</div>\n  <div class="grid cap">{cap}{intro}</div>\n</section>'
     marks = []
     rank = lambda p: HOME_ORDER.index(p['slug']) if p['slug'] in HOME_ORDER else len(HOME_ORDER)
-    shown = [p for p in sorted(PROJECTS, key=rank) if p['_any']]
-    picks = [p['_icon'] or (p['_dwgs'][0]['a'] if p['_dwgs'] else p['_cover']) for p in shown]
-    zs = [HOME_ZOOM.get(p['slug'], 1) for p in shown]
-    sizes = [(17 * d['ar'] ** .5 * z, 17 * d['ar'] ** .5 * z / d['ar']) for d, z in zip(picks, zs)]
+    shown = [(p, ink_of(p)) for p in sorted(PROJECTS, key=rank) if p['_any']]
+    shown = [(p, k) for p, k in shown if k]
+    sizes = [(18 * k['ar'] ** .5, 18 * k['ar'] ** .5 / k['ar']) for p, k in shown]
     pos, field_h = home_layout(sizes)
-    for p, d, z, (x, y) in zip(shown, picks, zs, pos):
-        rv = p['_index'] or p['_cover'] or d
+    for (p, k), (x, y) in zip(shown, pos):
         title = E(T(p['title'], lang))
-        marks.append(f'  <a class="mark" style="--s:{d["ar"] ** 0.5:.3f};--z:{z};--x:{x:.2f}vw;--y:{y:.2f}vw" href="{p["slug"]}.html" data-img="{r}{rv["full"]}" '
-                     f'data-ar="{rv["ar"]:.4f}" data-title="{title}" data-year="{year_of(p)}">'
-                     f'<img class="d" src="{r}{d["small"]}" width="{d["w"]}" height="{d["h"]}" alt="{title}" loading="lazy">'
-                     f'<span class="mob">{title}</span></a>')
+        ph = k['photo']
+        marks.append(f'  <a class="mark cut" style="--s:{k["ar"] ** 0.5:.3f};--z:1;--x:{x:.2f}vw;--y:{y:.2f}vw" href="{p["slug"]}.html">'
+                     f'<span class="cv" style="aspect-ratio:{k["ar"]:.4f}"><img class="ph" src="{r}{ph["small"]}" alt="" loading="lazy">'
+                     f'<img class="ink" src="{r}{k["ink"]}" alt="{title}" loading="lazy">'
+                     f'<span class="sl" aria-hidden="true"><i>A</i><i>A</i></span></span>'
+                     f'<span class="cap">{title} <span class="mute">{year_of(p)}</span></span></a>')
     rows = ''.join(f'<div class="r"><h2 class="caps">{E(T(x["label"], lang))}</h2><p>{E(T(x["text"], lang))}</p></div>' for x in CV['closing'])
     rows += f'<div class="r"><h2 class="caps">{S("contact", lang)}</h2><p>{contact_links(lang)}</p></div>'
     rows += f'<div class="r pic"><img class="seal" src="{r}img/sig-c.png" alt="{S("name", lang)}"></div>'
@@ -261,7 +277,6 @@ def home(lang):
 
 <section class="field" style="--h:{field_h:.2f}vw">
 {chr(10).join(marks)}
-  <div class="reveal" aria-hidden="true"><img alt=""><div><span class="t"></span><span class="y mute"></span></div></div>
 </section>
 
 <section class="grid closing">
