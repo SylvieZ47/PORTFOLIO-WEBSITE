@@ -53,6 +53,11 @@ h1, h2 { font: inherit; margin: 0; }
 .top .name { grid-column: 1 / 6; justify-self: start; font-weight: 500; font-size: 18px; display: flex; align-items: center; gap: 12px;
   margin-left: -12px; padding: 4px 14px 4px 12px; border-radius: 999px; }
 .top .sig { width: 40px; height: 40px; }
+/* 头像彩蛋：鼠标移上去向左偏 15°、底变黑，线条反白；点击无效果 */
+.top .av { display: block; border-radius: 50%; transition: transform .35s cubic-bezier(.3,1.6,.5,1), background-color .2s; }
+.top .av .sig { transition: filter .2s; }
+.top .name:hover .av { transform: rotate(-15deg); background: #111; }
+.top .name:hover .av .sig { filter: invert(1); }
 /* 名字和 CN 也垫同样的白底，但不加阴影：白底上看不出来，压到图上才显出来 */
 .top .name, .top nav .lang { background: rgba(255, 255, 255, .86); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
 .top nav { grid-column: 6 / 13; display: flex; gap: 30px; align-items: center; text-transform: uppercase; font-size: 12px; letter-spacing: .09em; }
@@ -244,4 +249,33 @@ h1, h2 { font: inherit; margin: 0; }
   .index td:nth-child(4) { width: auto; }
   .index td:last-child { width: 24%; }
   .list { row-gap: 12px; }
+}
+
+/* ── 实验：名字开场。一屏只有名字（Instrument Serif，和正文的 Instrument Sans 同一家族）；
+   往下滚，名字缩小飞进左上角，变成页眉 ── */
+.top .name { font-family: "Instrument Serif", Georgia, serif; font-weight: 400; font-size: 23px; letter-spacing: -.01em; }
+.top .name .t { display: inline-block; }
+.intro { height: 190vh; margin-top: calc(var(--top) * -1); }
+.intro .stage { position: sticky; top: 0; height: 100svh; display: grid; place-items: center; }
+.intro .nm { text-align: center; position: relative; }
+.intro .big { font-family: "Instrument Serif", Georgia, serif; font-weight: 400; font-size: clamp(64px, 13.5vw, 230px); line-height: .9;
+  letter-spacing: -.035em; transform-origin: 0 0; will-change: transform; white-space: nowrap; }
+.intro .big em { font-style: italic; }
+.intro .sub { margin: 22px 0 0; transition: opacity .3s; }
+/* 名字上悬停：菜单从副标题的位置换出来 */
+.intro .menu { position: absolute; left: 0; right: 0; bottom: 0; display: flex; justify-content: center; gap: 34px; opacity: 0; pointer-events: none;
+  transform: translateY(6px); transition: opacity .3s, transform .3s; }
+.intro .nm:hover .menu { opacity: 1; pointer-events: auto; transform: none; }
+.intro .nm:hover .sub { opacity: 0; }
+.intro .hint { position: absolute; bottom: 30px; left: 0; right: 0; text-align: center; margin: 0; transition: opacity .3s; }
+.intro .hint::after { content: ""; display: block; width: 1px; height: 34px; margin: 10px auto 0; background: currentColor; animation: drip 2.2s ease-in-out infinite; transform-origin: top; }
+@keyframes drip { 0% { transform: scaleY(0); } 50% { transform: scaleY(1); } 100% { transform: scaleY(1); opacity: 0; } }
+/* 开场时页眉的名字和导航先藏起来，名字飞到位再接手 */
+.top .name, .top nav { transition: opacity .35s; }
+.intro-on .top .name { opacity: 0; pointer-events: none; }
+.intro-on .top nav { opacity: 0; pointer-events: none; }
+.intro + .field { margin-top: 4vh; }
+@media (max-width: 800px) {
+  .intro { height: 150vh; }
+  .top .name { font-size: 20px; }
 }

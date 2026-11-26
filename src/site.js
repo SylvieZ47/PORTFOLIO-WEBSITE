@@ -87,3 +87,42 @@
   v.addEventListener('loadedmetadata', tick);
   tick();
 })();
+
+// ── 实验：名字开场。按滚动进度把大名字从屏幕中央移到页眉名字的位置（同一字体，缩放到同样大小）──
+(() => {
+  const sec = document.querySelector('.intro');
+  if (!sec) return;
+  const big = sec.querySelector('.big'), sub = sec.querySelector('.sub'), hint = sec.querySelector('.hint'), menu = sec.querySelector('.menu');
+  const head = document.querySelector('.top .name');
+  const root = document.documentElement;
+  // 页眉名字只取文字部分的位置
+  const label = [...head.childNodes].find((n) => n.nodeType === 3 && n.textContent.trim());
+  if (label) { const s = document.createElement('span'); s.className = 't'; s.textContent = label.textContent; head.replaceChild(s, label); }
+  const target = head.querySelector('.t');
+  const ease = (t) => 1 - Math.pow(1 - t, 3);
+  let raf = 0;
+  function tick() {
+    raf = 0;
+    const r = sec.getBoundingClientRect();
+    const p = Math.max(0, Math.min(1, -r.top / Math.max(1, r.height - innerHeight)));
+    const e = ease(Math.min(1, p / .85));
+    big.style.transform = 'none';
+    const a = big.getBoundingClientRect(), b = target.getBoundingClientRect();
+    const k = b.height / a.height * 1.0;
+    const dx = (b.left - a.left), dy = (b.top - a.top) + (b.height - a.height * k) * .5;
+    big.style.transform = `translate(${dx * e}px, ${dy * e}px) scale(${1 + (k - 1) * e})`;
+    const fade = Math.max(0, 1 - p * 4);
+    sub.style.opacity = menu.matches(':hover') ? 0 : fade; hint.style.opacity = fade;
+    menu.style.visibility = p > .05 ? 'hidden' : '';
+    const done = p >= .85;
+    root.classList.toggle('intro-on', !done);
+    big.style.visibility = done ? 'hidden' : '';
+  }
+  const req = () => { if (!raf) raf = requestAnimationFrame(tick); };
+  addEventListener('scroll', req, { passive: true });
+  addEventListener('resize', req);
+  document.fonts && document.fonts.ready.then(req);
+  big.addEventListener('click', () => scrollTo({ top: sec.offsetTop + sec.offsetHeight - innerHeight, behavior: 'smooth' }));
+  big.style.cursor = 'pointer';
+  tick();
+})();

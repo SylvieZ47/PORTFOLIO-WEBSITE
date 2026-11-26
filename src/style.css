@@ -250,3 +250,32 @@ h1, h2 { font: inherit; margin: 0; }
   .index td:last-child { width: 24%; }
   .list { row-gap: 12px; }
 }
+
+/* ── 实验：名字开场。一屏只有名字（Instrument Serif，和正文的 Instrument Sans 同一家族）；
+   往下滚，名字缩小飞进左上角，变成页眉 ── */
+.top .name { font-family: "Instrument Serif", Georgia, serif; font-weight: 400; font-size: 23px; letter-spacing: -.01em; }
+.top .name .t { display: inline-block; }
+.intro { height: 190vh; margin-top: calc(var(--top) * -1); }
+.intro .stage { position: sticky; top: 0; height: 100svh; display: grid; place-items: center; }
+.intro .nm { text-align: center; position: relative; }
+.intro .big { font-family: "Instrument Serif", Georgia, serif; font-weight: 400; font-size: clamp(64px, 13.5vw, 230px); line-height: .9;
+  letter-spacing: -.035em; transform-origin: 0 0; will-change: transform; white-space: nowrap; }
+.intro .big em { font-style: italic; }
+.intro .sub { margin: 22px 0 0; transition: opacity .3s; }
+/* 名字上悬停：菜单从副标题的位置换出来 */
+.intro .menu { position: absolute; left: 0; right: 0; bottom: 0; display: flex; justify-content: center; gap: 34px; opacity: 0; pointer-events: none;
+  transform: translateY(6px); transition: opacity .3s, transform .3s; }
+.intro .nm:hover .menu { opacity: 1; pointer-events: auto; transform: none; }
+.intro .nm:hover .sub { opacity: 0; }
+.intro .hint { position: absolute; bottom: 30px; left: 0; right: 0; text-align: center; margin: 0; transition: opacity .3s; }
+.intro .hint::after { content: ""; display: block; width: 1px; height: 34px; margin: 10px auto 0; background: currentColor; animation: drip 2.2s ease-in-out infinite; transform-origin: top; }
+@keyframes drip { 0% { transform: scaleY(0); } 50% { transform: scaleY(1); } 100% { transform: scaleY(1); opacity: 0; } }
+/* 开场时页眉的名字和导航先藏起来，名字飞到位再接手 */
+.top .name, .top nav { transition: opacity .35s; }
+.intro-on .top .name { opacity: 0; pointer-events: none; }
+.intro-on .top nav { opacity: 0; pointer-events: none; }
+.intro + .field { margin-top: 4vh; }
+@media (max-width: 800px) {
+  .intro { height: 150vh; }
+  .top .name { font-size: 20px; }
+}

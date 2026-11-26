@@ -190,7 +190,7 @@ def shell(lang, page, title, body, desc=''):
 <link rel="icon" type="image/png" href="{r}img/sig-s.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="{r}style.css">
 </head>
 <body>
@@ -234,12 +234,11 @@ def home(lang):
     hp = next(p for p in PROJECTS if p['slug'] == HERO_PROJECT)
     cap = f'<span><a href="{hp["slug"]}.html">{E(T(hp["title"], lang))}</a> <span class="mute">{year_of(hp)}</span></span>'
     intro = f'<p>{E(T(CV["intro"], lang))}</p>'
-    if os.path.isfile(HERO_VIDEO):
-        os.makedirs(f'{OUT}/img', exist_ok=True); shutil.copyfile(HERO_VIDEO, f'{OUT}/img/home.mp4')
-        media = f'<video src="{r}img/home.mp4" poster="{r}{hp["_cover"]["full"]}" muted playsinline preload="auto"></video>'
-        hero = f'<div class="hero-scroll">\n<section class="hero">\n  <div class="frame">{media}</div>\n  <div class="grid cap">{cap}{intro}</div>\n</section>\n</div>'
-    else:
-        hero = f'<section class="hero">\n  <div class="frame">{img_tag(hp["_cover"], r, lazy=False)}</div>\n  <div class="grid cap">{cap}{intro}</div>\n</section>'
+    # 实验：名字开场。一屏只有名字；往下滚名字缩小飞到左上角变成页眉，接着是手绘图
+    nav = ''.join(f'<a class="u" href="{k}.html">{S(k, lang)}</a>' for k in ('work', 'about', 'cv'))
+    hero = (f'<section class="intro">\n  <div class="stage">\n    <div class="nm"><h1 class="big">{S("name", lang)}</h1>'
+            f'<p class="sub caps">{S("title", lang)}</p><nav class="menu caps">{nav}</nav></div>\n'
+            f'    <p class="hint caps mute">{"Scroll" if lang == "en" else "向下"}</p>\n  </div>\n</section>')
     marks = []
     rank = lambda p: HOME_ORDER.index(p['slug']) if p['slug'] in HOME_ORDER else len(HOME_ORDER)
     shown = [p for p in sorted(PROJECTS, key=rank) if p['_any']]
