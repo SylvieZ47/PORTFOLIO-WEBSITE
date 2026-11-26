@@ -135,7 +135,7 @@
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, W, H);
     const cr = cv.getBoundingClientRect();
-    const kOff = 1 - sm(0, .5, p), kOn = 1 - sm(.3, 1, p);
+    const kOff = 1 - sm(0, .6, p), kOn = 1 - sm(.35, 1, p);
     if (kOn <= 0) return;
     const pageTop = cr.top + scrollY;                       // 画布在页面上的位置，用来对齐背景网格
     const oy = ((-pageTop % P) + P) % P, ox = 0;
@@ -152,13 +152,18 @@
         let v = tone[ti];
         if (v < .04) continue;
         const m = 1 - sm(fadeA, fadeB, y);            // 下面一截渐渐淡成网格，名字落在那里
-        const rad = R * Math.sqrt(v) * k * m;
+        let lens = 1;                                   // 鼠标处像放大镜，点变大一点
+        if (mx > -1e4) { const dd = (x - mx) * (x - mx) + (y - my) * (y - my); if (dd < 25000) lens = 1 + .7 * Math.exp(-dd / 5000); }
+        const rad = Math.min(P * .62, R * Math.sqrt(v) * k * m * lens);
         if (rad < .35) continue;
         ctx.beginPath(); ctx.arc(x, y, rad, 0, 6.2832); ctx.fill();
       }
     }
   }
   const req = () => { if (!raf) raf = requestAnimationFrame(draw); };
+  let mx = -1e5, my = -1e5;
+  sec.addEventListener('mousemove', (e) => { const b = cv.getBoundingClientRect(); mx = e.clientX - b.left; my = e.clientY - b.top; req(); });
+  sec.addEventListener('mouseleave', () => { mx = my = -1e5; req(); });
   addEventListener('scroll', req, { passive: true });
   addEventListener('resize', () => { size(); req(); });
 })();
