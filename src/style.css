@@ -249,10 +249,9 @@ h1, h2 { font: inherit; margin: 0; }
 .ax-intro .sun { grid-column: 11 / 13; justify-self: end; font-variant-numeric: tabular-nums; font-size: 12px; letter-spacing: .09em; }
 .ax-intro .sun::before { content: "☀\00a0"; }
 .board { display: grid; grid-template-columns: repeat(var(--cols), 1fr); padding: 0 var(--m); --cell: calc((100vw - 2 * var(--m)) / var(--cols)); }
-.cell { position: relative; height: calc(var(--cell) * .82); display: flex; justify-content: space-between; align-items: flex-start;
+.cell { position: relative; height: calc(var(--cell) * .82); display: flex; justify-content: flex-start; gap: 10px; align-items: flex-start;
   padding: 10px 12px 0 0; font-size: 12px; line-height: 1.3; }
-.cell .ref { color: var(--faint); font-variant-numeric: tabular-nums; }
-.cell.e .ref { margin-left: auto; }
+.cell .ref { width: 20px; flex: none; color: var(--faint); font-variant-numeric: tabular-nums; }
 .cell .lbl { padding-right: 8px; position: relative; z-index: 1; }
 .cell .yr { display: block; color: var(--mute); }
 .cell.nopic .lbl { color: var(--mute); }
@@ -260,8 +259,8 @@ h1, h2 { font: inherit; margin: 0; }
 /* 体块图：横条精灵图，--f 选第几帧；以建筑本身（不含影子）的中心对准格子中心 */
 .cell .ax, .cell .sk { position: absolute; pointer-events: none; }
 .cell .ax {
-  /* 建筑本身最多占 0.6 格宽、0.5 格高，两者取小 */
-  --u: min(calc(var(--cell) * .6 / var(--ow)), calc(var(--cell) * .82 * .5 / var(--oh)));
+  /* 建筑本身最多占 0.68 格宽、0.56 格高，两者取小 */
+  --u: min(calc(var(--cell) * .68 / var(--ow)), calc(var(--cell) * .82 * .56 / var(--oh)));
   width: calc(var(--fw) * var(--u)); height: calc(var(--fh) * var(--u));
   left: calc(50% - var(--ox) * var(--u)); top: calc(60% - var(--oy) * var(--u));
   background-size: calc(var(--n) * 100%) 100%; background-repeat: no-repeat;

@@ -306,7 +306,7 @@ def home_axon(lang):
                 fig = (f'<span class="ax" style="--fw:{m["w"]};--fh:{m["h"]};--ox:{m["ox"] + m["ow"] / 2};--oy:{m["oy"] + m["oh"] / 2};'
                        f'--ow:{m["ow"]};--oh:{m["oh"]};--n:{m["frames"]};background-image:url({r}img/axon/{slug}.png)"></span>{sketch}')
             cls = 'cell p' + ('' if m else ' t') + ('' if p['_any'] else ' nopic')
-            cells.append(f'  <a class="{cls}" href="{slug}.html"><span class="lbl">{title}<span class="yr">{year_of(p)}</span></span><span class="ref">{ref}</span>{fig}</a>')
+            cells.append(f'  <a class="{cls}" href="{slug}.html"><span class="ref">{ref}</span><span class="lbl">{title}<span class="yr">{year_of(p)}</span></span>{fig}</a>')
     intro = E(T(CV['intro'], lang))
     body = f"""<section class="grid ax-intro"><p>{intro}</p><p class="sun mute" aria-hidden="true"><span class="clock">12:00</span></p></section>
 
