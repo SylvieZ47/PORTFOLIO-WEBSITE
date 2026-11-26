@@ -209,7 +209,7 @@ def shell(lang, page, title, body, desc=''):
 # ── 实验：硫酸纸。src/ink.py 把封面描成钢笔线稿（和原图同尺寸），画在一张半透明硫酸纸上，
 #    盖在原图上；往下滚，纸从上边掀起来，露出原图 ──
 INK_META = json.load(open('assets/ink/meta.json')) if os.path.isfile('assets/ink/meta.json') else {}
-TRACE_ORDER = ['westfall-hillside-house', 'beck-corner-apartment', '798-artist-district', 'ashton-house-remodel', 'pku-marxism-school-building']
+TRACE_ORDER = ['beck-corner-apartment', '798-artist-district', 'ashton-house-remodel', 'pku-marxism-school-building', 'westfall-hillside-house']   # 描得最稳的放最前
 def ink_of(p):
     folder = p.get('folder') or p['slug']
     if folder not in INK_META: return None
