@@ -87,3 +87,24 @@
   v.addEventListener('loadedmetadata', tick);
   tick();
 })();
+
+// ── 实验：日照。鼠标横向位置 = 一天的时刻，体块图的影子跟着转；手机上跟着滚动走 ──
+(() => {
+  const board = document.querySelector('.board');
+  if (!board) return;
+  const clock = document.querySelector('.sun .clock');
+  const N = 9, H0 = 7, H1 = 18;           // 9 帧，07:00 到 18:00
+  let last = -1;
+  const set = (t) => {
+    t = Math.max(0, Math.min(1, t));
+    const f = Math.round(t * (N - 1));
+    if (f !== last) { board.style.setProperty('--f', f); last = f; }
+    if (clock) { const h = H0 + t * (H1 - H0); clock.textContent = `${String(Math.floor(h)).padStart(2, '0')}:${String(Math.round((h % 1) * 60 / 15) * 15 % 60).padStart(2, '0')}`; }
+  };
+  set(.5);
+  if (matchMedia('(hover: hover) and (pointer: fine)').matches) {
+    addEventListener('mousemove', (e) => set(e.clientX / innerWidth));
+  } else {
+    addEventListener('scroll', () => set((scrollY / Math.max(1, document.body.scrollHeight - innerHeight))), { passive: true });
+  }
+})();

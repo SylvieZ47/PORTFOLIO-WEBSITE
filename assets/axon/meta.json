@@ -1,0 +1,83 @@
+{
+ "798-artist-district": {
+  "w": 636,
+  "h": 336,
+  "frames": 9,
+  "ox": 174.9,
+  "oy": 12.0,
+  "ow": 300.0,
+  "oh": 267.5
+ },
+ "seedlings": {
+  "w": 397,
+  "h": 225,
+  "frames": 9,
+  "ox": 44.2,
+  "oy": 12.0,
+  "ow": 300.0,
+  "oh": 193.9
+ },
+ "downstairs-bazaar": {
+  "w": 541,
+  "h": 289,
+  "frames": 9,
+  "ox": 73.3,
+  "oy": 12.0,
+  "ow": 300.0,
+  "oh": 232.6
+ },
+ "westfall-hillside-house": {
+  "w": 589,
+  "h": 316,
+  "frames": 9,
+  "ox": 47.1,
+  "oy": 12.0,
+  "ow": 300.0,
+  "oh": 292.0
+ },
+ "ashton-house-remodel": {
+  "w": 658,
+  "h": 328,
+  "frames": 9,
+  "ox": 90.8,
+  "oy": 12.0,
+  "ow": 300.0,
+  "oh": 229.1
+ },
+ "beck-corner-apartment": {
+  "w": 597,
+  "h": 350,
+  "frames": 9,
+  "ox": 97.2,
+  "oy": 12.0,
+  "ow": 300.0,
+  "oh": 280.7
+ },
+ "pku-marxism-school-building": {
+  "w": 858,
+  "h": 590,
+  "frames": 9,
+  "ox": 204.6,
+  "oy": 20.5,
+  "ow": 300.0,
+  "oh": 511.5
+ },
+ "river-lantern": {
+  "w": 344,
+  "h": 188,
+  "frames": 9,
+  "ox": 19.8,
+  "oy": 12.0,
+  "ow": 300.0,
+  "oh": 160.8
+ },
+ "the-ark": {
+  "w": 523,
+  "h": 313,
+  "frames": 9,
+  "ox": 111.9,
+  "oy": 12.0,
+  "ow": 300.0,
+  "oh": 254.0
+ }
+}

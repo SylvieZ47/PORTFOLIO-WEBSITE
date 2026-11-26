@@ -270,6 +270,56 @@ def home(lang):
 """
     return shell(lang, 'index.html', '', body)
 
+
+# ── 首页（实验：轴测体块格子）──────────────────────────────
+# 8 栏 × 6 行的松散格子。有体块图的项目放一格，没图的项目只写名字；空格只标格网编号。
+# 体块图是 src/axon.py 按渲染图抽象出来的黑白轴测，一张横条里有 9 个时刻的日照阴影，
+# 鼠标从左到右 = 早上到傍晚。悬停一格时换成手绘图。
+AXON_COLS, AXON_ROWS = 8, 6
+AXON_CELLS = {   # slug: (列, 行)，从 1 数
+    '798-artist-district': (2, 1), 'downstairs-bazaar': (6, 1), 'laminated-coliseum': (8, 1),
+    'seedlings': (4, 2), 'korea-commercial-i': (1, 2), 'river-lantern': (8, 2),
+    'westfall-hillside-house': (1, 3), 'the-ark': (6, 3), 'roski-teaching-building': (3, 3),
+    'pku-marxism-school-building': (3, 4), 'san-vicente-adu': (5, 4), 'ashton-house-remodel': (7, 4),
+    'korea-commercial-ii': (2, 5), 'beck-corner-apartment': (5, 5), 'chadron-adu': (8, 5),
+    'korea-commercial-iii': (1, 6), 'korea-commercial-iv': (7, 6),
+}
+def home_axon(lang):
+    r = '' if lang == 'en' else '../'
+    meta = json.load(open('assets/axon/meta.json'))
+    os.makedirs(f'{OUT}/img/axon', exist_ok=True)
+    by = {p['slug']: p for p in PROJECTS}
+    at = {v: k for k, v in AXON_CELLS.items()}
+    cells = []
+    for row in range(1, AXON_ROWS + 1):
+        for col in range(1, AXON_COLS + 1):
+            ref = f'{"ABCDEFGH"[col - 1]}{row}'
+            slug = at.get((col, row))
+            if not slug:
+                cells.append(f'  <div class="cell e"><span class="ref">{ref}</span></div>'); continue
+            p = by[slug]; title = E(T(p['title'], lang)); m = meta.get(slug)
+            fig = ''
+            if m:
+                shutil.copyfile(f'assets/axon/{slug}.png', f'{OUT}/img/axon/{slug}.png')
+                sk = p['_icon']
+                sketch = f'<img class="sk" src="{r}{sk["small"]}" alt="" loading="lazy">' if sk else ''
+                fig = (f'<span class="ax" style="--fw:{m["w"]};--fh:{m["h"]};--ox:{m["ox"] + m["ow"] / 2};--oy:{m["oy"] + m["oh"] / 2};'
+                       f'--n:{m["frames"]};background-image:url({r}img/axon/{slug}.png)"></span>{sketch}')
+            cls = 'cell p' + ('' if m else ' t') + ('' if p['_any'] else ' soon')
+            cells.append(f'  <a class="{cls}" href="{slug}.html"><span class="lbl">{title}</span><span class="ref">{year_of(p)}</span>{fig}</a>')
+    intro = E(T(CV['intro'], lang))
+    body = f"""<section class="grid ax-intro"><p>{intro}</p><p class="sun mute" aria-hidden="true"><span class="clock">12:00</span></p></section>
+
+<section class="board" style="--cols:{AXON_COLS}">
+{chr(10).join(cells)}
+</section>
+
+<section class="grid closing">
+  <div class="r"><h2 class="caps">{S("contact", lang)}</h2><p>{contact_links(lang)}</p></div>
+</section>
+"""
+    return shell(lang, 'index.html', '', body)
+
 # ── Work ───────────────────────────────────────────────
 def work(lang):
     r = '' if lang == 'en' else '../'
@@ -438,7 +488,7 @@ shutil.copyfile('src/site.js', f'{OUT}/site.js')
 if os.path.isfile('assets/cv.pdf'): shutil.copyfile('assets/cv.pdf', f'{OUT}/cv.pdf')
 write(f'{OUT}/.nojekyll', '')
 for lang, d in (('en', OUT), ('zh', f'{OUT}/zh')):
-    write(f'{d}/index.html', home(lang)); write(f'{d}/work.html', work(lang))
+    write(f'{d}/index.html', home_axon(lang)); write(f'{d}/work.html', work(lang))
     write(f'{d}/about.html', about(lang)); write(f'{d}/cv.html', cv(lang))
     for p in PROJECTS: write(f'{d}/{p["slug"]}.html', project(p, lang))
 
