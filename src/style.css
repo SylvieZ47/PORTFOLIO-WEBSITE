@@ -278,6 +278,7 @@ h1, h2 { font: inherit; margin: 0; }
 .cell .sk { width: 78%; left: 11%; top: 50%; transform: translateY(-46%) scale(.96); opacity: 0; transition: opacity .35s, transform .35s; mix-blend-mode: multiply; }
 .cell.p:hover .ax { opacity: 0; }
 .cell.p:hover .sk { opacity: 1; transform: translateY(-46%) scale(1); }
+.board { overflow-x: clip; }
 .board + .closing { padding-top: 12vh; }
 @media (max-width: 800px) {
   .ax-intro .sun { display: none; }
