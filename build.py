@@ -234,8 +234,8 @@ def home(lang):
                      f'<span class="mob">{title}</span></a>')
     c = CV['contact']
     rows = ''.join(f'<div class="r"><h2 class="caps">{E(T(x["label"], lang))}</h2><p>{E(T(x["text"], lang))}</p></div>' for x in CV['closing'])
-    links = (f'<a class="u" href="mailto:{E(c["email"])}">{E(c["email"])}</a><br>'
-             f'<a class="u" href="https://{E(c["linkedin"])}">LinkedIn</a><br>'
+    links = (f'<a class="u" href="mailto:{E(c["email"])}">{S("email", lang)}</a><br>'
+             f'<a class="u" href="https://{E(c["linkedin"])}">{"LinkedIn" if lang == "en" else "领英"}</a><br>'
              f'<a class="u" href="work.html">{S("all_projects", lang)}</a>')
     rows += f'<div class="r"><h2 class="caps">{"Contact" if lang == "en" else "联系"}</h2><p>{links}</p></div>'
     rows += f'<div class="r pic"><img class="seal" src="{r}img/sig-c.png" alt="Sylvie (Siqi) Zhang"></div>'
@@ -249,8 +249,7 @@ def home(lang):
 <section class="grid closing">
 {rows}
 </section>
-
-{foot(lang, '')}"""
+"""
     return shell(lang, 'index.html', '', body)
 
 # ── Work ───────────────────────────────────────────────
