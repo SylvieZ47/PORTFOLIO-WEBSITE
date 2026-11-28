@@ -187,11 +187,11 @@
       }
       case 'prism': return prism(s.poly, z[0], z[1], s.axis, s.smooth);
       case 'cyl': {
-        const n = s.n || 48, p = arcPts(s.c[0], s.c[1], s.r, 0, 360, n).slice(0, n);
+        const n = s.n || 32, p = arcPts(s.c[0], s.c[1], s.r, 0, 360, n).slice(0, n);
         return prism(p, z[0], z[1], 'z', p.map(() => true));
       }
       case 'arc': {                           // 弧形墙：圆心 c，内外半径 r，角度 a（度）
-        const n = s.n || 40, o = arcPts(s.c[0], s.c[1], s.r[1], s.a[0], s.a[1], n), i = arcPts(s.c[0], s.c[1], s.r[0], s.a[0], s.a[1], n).reverse();
+        const n = s.n || Math.max(10, Math.round((s.a[1] - s.a[0]) / 9)), o = arcPts(s.c[0], s.c[1], s.r[1], s.a[0], s.a[1], n), i = arcPts(s.c[0], s.c[1], s.r[0], s.a[0], s.a[1], n).reverse();
         const sm = o.map((_, k) => k > 0 && k < n).concat(i.map((_, k) => k > 0 && k < n));
         return prism(o.concat(i), z[0], z[1], 'z', sm);
       }
@@ -322,6 +322,7 @@
     const occ = faces.filter((f) => dot(f.n, V) > 1e-6);
     occ.forEach((f) => {
       f.p2 = f.pts.map(proj);
+      f.dmax = Math.max(...f.pts.map((p) => dot(p, V)));
       f.bb = f.p2.reduce((b, p) => [Math.min(b[0], p[0]), Math.min(b[1], p[1]), Math.max(b[2], p[0]), Math.max(b[3], p[1])], [Infinity, Infinity, -Infinity, -Infinity]);
     });
     const vis = [], hid = [];
@@ -329,8 +330,9 @@
       const p = proj(e.a), q = proj(e.b);
       if (Math.hypot(q[0] - p[0], q[1] - p[1]) < 1e-6) return;
       const bb = [Math.min(p[0], q[0]), Math.min(p[1], q[1]), Math.max(p[0], q[0]), Math.max(p[1], q[1])];
-      const cover = [];
+      const cover = [], dmin = Math.min(dot(e.a, V), dot(e.b, V)) + 1e-6;
       occ.forEach((f) => {
+        if (f.dmax <= dmin) return;             // 整个面都在这条边后面，挡不住
         if (f.bb[0] > bb[2] || f.bb[2] < bb[0] || f.bb[1] > bb[3] || f.bb[3] < bb[1]) return;
         const ts = [0, 1];
         for (let i = 0; i < f.p2.length; i++) { const t = segX(p, q, f.p2[i], f.p2[(i + 1) % f.p2.length]); if (t > 0) ts.push(t); }
@@ -376,6 +378,7 @@
       let pieces = [A];
       list.forEach((B) => {
         if (B.accent || B.part === A.part) return;
+        if (B.bb[0] >= A.bb[2] || B.bb[2] <= A.bb[0] || B.bb[1] >= A.bb[3] || B.bb[3] <= A.bb[1]) return;
         pieces = pieces.flatMap((P) => {
           const sd = P.pts.map((p) => dot(B.n, p) - B.d);
           if (Math.max(...sd) > 1e-4 && Math.min(...sd) < -1e-4) return splitByPlane(P, B.n, B.d);
@@ -396,6 +399,9 @@
       const shrink = (F) => F.p2.map((p) => [p[0] + (F.c2[0] - p[0]) * 0.02, p[1] + (F.c2[1] - p[1]) * 0.02]);
       shrink(A).forEach((p) => cand.push(p)); shrink(B).forEach((p) => cand.push(p));
       cand.push(A.c2, B.c2);
+      const hit = cand.find((c) => inPoly(c, A.p2) && inPoly(c, B.p2));
+      if (hit) return hit;
+      cand.length = 0;
       for (let i = 0; i < A.p2.length; i++) for (let j = 0; j < B.p2.length; j++) {
         const p = A.p2[i], q = A.p2[(i + 1) % A.p2.length], t = segX(p, q, B.p2[j], B.p2[(j + 1) % B.p2.length]);
         if (t > 0) {
@@ -408,6 +414,7 @@
     };
     for (let i = 0; i < n; i++) for (let j = i + 1; j < n; j++) {
       const A = list[i], B = list[j];
+      if (!A.accent && !B.accent) continue;     // 白压白看不出来，只有强调色的面需要排对
       if (A.bb[0] >= B.bb[2] || A.bb[2] <= B.bb[0] || A.bb[1] >= B.bb[3] || A.bb[3] <= B.bb[1]) continue;
       const c = common(A, B);
       if (!c) continue;
