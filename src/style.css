@@ -21,15 +21,6 @@ body {
   font: 400 15px/1.5 "Instrument Sans", "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif;
   -webkit-font-smoothing: antialiased;
 }
-/* 很淡的点阵本底：每 18px 一个小点，每 90px 一个小圈（像句号），排成阵列，比网格轻 */
-body {
-  --dot: rgba(0, 0, 0, .16); --ring: rgba(0, 0, 0, .2);
-  background-image:
-    radial-gradient(circle, #fff 0 1.7px, var(--ring) 1.9px 2.6px, transparent 2.9px),
-    radial-gradient(circle, var(--dot) 0 .75px, transparent 1.1px);
-  background-size: 90px 90px, 18px 18px;
-  background-position: 0 0, 36px 36px;
-}
 a { color: inherit; text-decoration: none; }
 a:hover { color: var(--mute); }
 /* 链接悬停：一条细线从左画出来 */
@@ -77,121 +68,22 @@ h1, h2 { font: inherit; margin: 0; }
 .hero-scroll { height: 320vh; }
 .hero-scroll .hero { position: sticky; top: var(--top); }
 
-/* ── 首页散点：桌面按三条线 + 圆不重叠的规则排（见 build.py 的 HOME_ 开头几项）；手机两栏网格 ── */
+/* ── 首页阵列：一张看不见的等大格子表（列数、行数、格子在 build.py 的 HOME_ 开头几项）。
+   页面上不画线，site.js 在每个格角放一个小 +；项目名顶替它所在格子左上角的那个 +，图放在格子里。── */
 .field {
-  position: relative; margin-top: 27vh; padding: 0 var(--m);
-  display: grid; grid-template-columns: repeat(12, 1fr);
-  column-gap: var(--g); row-gap: 15.3vh; align-items: start;
-  --k: 17vw;   /* 每张小图的面积统一 = k²；--s 是 build.py 按比例算的 √(宽/高) */
+  --cols: var(--cols-d); --rows: var(--rows-d); --ch: var(--ch-d);
+  position: relative; margin: 24vh var(--m) 0;
+  display: grid; grid-template-columns: repeat(var(--cols), minmax(0, 1fr)); grid-template-rows: repeat(var(--rows), minmax(0, 1fr));
+  aspect-ratio: calc(var(--cols) / (var(--rows) * var(--ch)));
 }
-.mark { display: block; position: relative; justify-self: center; width: calc(var(--k) * var(--s, 1) * var(--z, 1)); transition: opacity .3s; }
-.mark .d { mix-blend-mode: multiply; }
-.mark .mob { display: none; }
-/* 桌面：位置由 build.py 按规则算好（--x 相对页面中线、--y，单位 vw），这里只负责摆 */
-@media (min-width: 801px) {
-  .field { display: block; height: var(--h); padding: 0; }
-  .field .mark { position: absolute; left: calc(50% + var(--x)); top: var(--y); }
-}
-.field.has-hover .mark { opacity: .08; }
-.field.has-hover .mark.on { opacity: 0; }
-.reveal {
-  position: absolute; z-index: 3; pointer-events: none; opacity: 0;
-  transition: clip-path .6s cubic-bezier(.2,.7,.2,1), opacity .2s;
-}
-.reveal div { display: flex; justify-content: space-between; padding-top: 10px; }
-
-/* ── 首页结尾：三段并排，大大方方摆在主体区里（第 3–5、6–8、9–10 栏） ── */
-.closing { padding-top: 32vh; padding-bottom: 64px; align-items: start; }
-.closing .r:nth-child(1) { grid-column: 3 / 6; }
-.closing .r:nth-child(2) { grid-column: 7 / 10; }
-.closing .r:nth-child(3) { grid-column: 10 / 12; }
-.closing h2 { color: var(--mute); margin-bottom: 14px; }
-.closing p { margin: 0; line-height: 1.75; }
-
-/* ── 页脚：三个元素把页面底边框住——左下角、正文起始线、右下角 ── */
-.closing .pic { align-self: stretch; position: relative; }
-.closing .seal { position: absolute; left: 0; top: 5px; bottom: 7px; height: calc(100% - 12px); width: auto; }
-.pager { padding-top: 24px; padding-bottom: 9vh; }
-.pager > :first-child { grid-column: 1 / 6; justify-self: start; }
-.pager > :last-child { grid-column: 6 / 13; justify-self: end; }
-
-/* ── Work 页：折叠列表 + 错落大图 ── */
-.index { padding-top: 6vh; padding-bottom: 8vh; }
-.index details { grid-column: 1 / 13; }
-.index summary {
-  display: flex; align-items: baseline; gap: 28px; list-style: none; padding: 11px 0;
-  border-top: 1px solid var(--ink); border-bottom: 1px solid var(--ink);
-}
-.index summary::-webkit-details-marker { display: none; }
-.index summary b { font-weight: 500; }
-.index .pm { font-size: 20px; line-height: 1; width: 14px; }
-.index .pm:last-child { margin-left: auto; text-align: right; }
-.index .pm::before { content: "+"; }
-.index details[open] .pm::before { content: "–"; }
-.index .hint::after { content: attr(data-closed); }
-.index details[open] .hint::after { content: attr(data-open); }
-.index details[open] summary { border-bottom-color: var(--rule); }
-.index table { width: 66.4%; margin-left: 16.8%; border-collapse: collapse; }
-.index td { padding: 9px 0; border-bottom: 1px solid var(--rule); vertical-align: top; }
-.index td:first-child { width: 12.5%; color: var(--mute); font-variant-numeric: tabular-nums; }
-.index td:nth-child(2) { width: 25%; padding-right: var(--g); font-weight: 600; }
-.index td:nth-child(3) { width: 20%; color: var(--mute); padding-right: var(--g); }
-.index td:nth-child(4) { width: 20%; color: var(--mute); padding-right: var(--g); }
-.index td:last-child { width: 22.5%; color: var(--mute); }
-
-.works { row-gap: 18vh; align-items: end; padding-bottom: 20vh; }
-.work { margin: 0; }
-.work:nth-child(6n+1) { grid-column: 1 / 9; }
-.work:nth-child(6n+2) { grid-column: 2 / 6; }
-.work:nth-child(6n+3) { grid-column: 7 / 13; }
-.work:nth-child(6n+4) { grid-column: 4 / 13; }
-.work:nth-child(6n+5) { grid-column: 1 / 7; }
-.work:nth-child(6n+6) { grid-column: 9 / 13; }
-.work.tall img { max-height: 82vh; width: auto; max-width: 100%; }
-.work figcaption, .fig figcaption { display: flex; gap: 20px; padding-top: 10px; }
-.work figcaption span:last-child { margin-left: auto; }
-
-/* ── 项目页 ── */
-.head { padding-top: 12vh; padding-bottom: 40px; row-gap: 5vh; }
-.head h1 {
-  grid-column: 3 / 11;
-  font-weight: 500; font-size: clamp(40px, 5.4vw, 84px); line-height: 1.02; letter-spacing: -0.03em;
-}
-.facts { grid-column: 6 / 11; margin: 0; display: grid; grid-template-columns: 1fr 3fr; column-gap: var(--g); }
-.facts dt { color: var(--mute); }
-.facts dd { margin: 0; }
-.fig { margin: 0; }
-.text { font-size: 16px; line-height: 1.6; }
-.lead { font-size: 26px; line-height: 1.38; letter-spacing: -0.01em; }
-.text p:last-child { margin-bottom: 0; }
-.row { padding-bottom: 14vh; align-items: start; }
-.stagger { row-gap: 16vh; padding-bottom: 18vh; }
-.stagger > * { align-self: end; }
-.stagger > .a-start { align-self: start; }
-.stagger .text { padding-bottom: 34px; }
-.soon {
-  grid-column: 1 / 13; aspect-ratio: 16 / 7; border: 1px solid var(--rule);
-  display: flex; align-items: flex-end; padding: 20px; color: var(--mute);
-}
-
-/* ── About / CV：标题和项目页标题同一个字号 ── */
-.big { padding-top: 12vh; padding-bottom: 40px; }
-.big h1 { grid-column: 1 / 6; font-weight: 500; font-size: clamp(24px, 2vw, 34px); line-height: 1.1; letter-spacing: -0.02em; }
-.about .portrait { grid-column: 1 / 5; }
-.about .portrait img { max-width: 300px; margin-left: -10px; }
-.about .bio { grid-column: 6 / 11; }
-.about .bio .lead { margin-bottom: 1.2em; }
-.about { padding-bottom: 24vh; }
-.list { padding-bottom: 9vh; }
-.list h2 { grid-column: 3 / 6; padding-top: 15px; border-top: 1px solid var(--ink); }
-.list .rows { grid-column: 6 / 11; }
-.list .r { display: grid; grid-template-columns: 1fr 3fr; column-gap: var(--g); padding: 12px 0; border-top: 1px solid var(--rule); }
-.list .r:first-child { border-top-color: var(--ink); }
-.list .r > :first-child { color: var(--mute); font-variant-numeric: tabular-nums; }
-.list .note { display: block; padding-top: 8px; color: var(--mute); }
-.list.plain { padding-bottom: 5vh; }
-
-/* ── 十字光标：平时小十字，移到图上拉成通长的线 ── */
+.field .marks { position: absolute; left: 0; top: 0; overflow: visible; pointer-events: none; }
+.field .marks path { fill: none; stroke: var(--ink); stroke-width: 1; vector-effect: non-scaling-stroke; }
+.cell { grid-column: var(--c); grid-row: var(--r); position: relative; display: grid; place-items: center; padding-top: 14px; min-width: 0; }
+.cell .lbl { position: absolute; left: 0; top: 0; transform: translateY(-.75em); max-width: calc(100% - 14px);
+  font-size: 12px; line-height: 1.5; color: var(--ink); z-index: 1; text-shadow: 0 0 3px #fff, 0 0 2px #fff; }
+.cell:hover { color: inherit; }
+.cell .d { width: calc(62% * var(--s, 1) * var(--z, 1)); max-width: 94%; }
+.cell img.d { mix-blend-mode: multiply; }
 @media (hover: hover) and (pointer: fine) {
   .has-xh, .has-xh * { cursor: none; }
   .xh { position: fixed; left: 0; top: 0; z-index: 99; pointer-events: none; mix-blend-mode: difference; --l: 23px; opacity: 0; transition: opacity .15s; }
@@ -204,13 +96,14 @@ h1, h2 { font: inherit; margin: 0; }
 
 /* ── 图标悬停微放大：提示可交互，只放大图本身，不挤动布局（体块图标自己会动，不放大）── */
 @media (hover: hover) and (pointer: fine) {
-  .mark .d { transition: transform .2s ease-out; }
-  .mark:hover .d:not(.m) { transform: scale(1.05); }
+  .cell img.d { transition: transform .2s ease-out; }
+  .cell:hover img.d { transform: scale(1.05); }
 }
 
 /* ── 首页体块图标（data/massing.js + src/massing.js）：白面、细线、虚线是被挡住的边，强调色斜线是被操作的那块 ── */
 .m-defs { position: absolute; width: 0; height: 0; overflow: hidden; }
-.mark .d.m { display: block; width: 100%; height: auto; overflow: visible; mix-blend-mode: normal; }
+.cell .d.m { display: block; height: auto; overflow: visible; }
+.m .ms { fill: var(--ink); }   /* 硬阴影：所有体块同一个太阳 */
 .m .mf { fill: #fff; stroke: #fff; stroke-width: .25; }
 .m .ma { fill: url(#m-hatch); stroke: url(#m-hatch); stroke-width: .25; }
 .m-defs .mt { fill: #fce9e3; }
@@ -230,10 +123,9 @@ h1, h2 { font: inherit; margin: 0; }
   .hero, .hero-scroll { height: auto; min-height: 0; }
   .hero-scroll .hero { position: static; }
   .hero .frame { flex: none; aspect-ratio: 4 / 5; }
-  .field { margin-top: 72px; grid-template-columns: 1fr 1fr; row-gap: 40px; align-items: end; }
-  .field .mark { grid-column: auto !important; margin-top: 0 !important; left: 0 !important; top: 0 !important; width: min(100%, calc(30vw * var(--s, 1) * var(--z, 1))); }
-  .mark .mob { display: block; padding-top: 8px; }
-  .reveal { display: none; }
+  .field { margin-top: 72px; --cols: var(--cols-m); --rows: var(--rows-m); --ch: 1.05; }
+  .cell { grid-column: var(--cm); grid-row: var(--rm); padding-top: 18px; }
+  .cell .d { width: calc(54% * var(--s, 1) * var(--z, 1)); max-width: 86%; }
   .closing { padding-top: 96px; padding-bottom: 40px; row-gap: 36px; }
   .about { padding-bottom: 72px; }
   .pager { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; }

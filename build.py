@@ -16,18 +16,16 @@ HERO_VIDEO = 'assets/home.mp4'
 # 首页散点的排列顺序（只管首页；没列的项目排在后面）。第几个就落在第几个位置
 HOME_ORDER = ['798-artist-district', 'downstairs-bazaar', 'seedlings', 'river-lantern', 'westfall-hillside-house',
               'the-ark', 'ashton-house-remodel', 'pku-marxism-school-building', 'beck-corner-apartment']
-# 首页小图的大小微调（1 = 标准；每张图面积统一，这里再乘）
-HOME_ZOOM = {'westfall-hillside-house': 1.15, 'downstairs-bazaar': .935, 'river-lantern': 1.1, 'seedlings': 1.011}
-# 首页排版规则（单位 vw）：
-# 画三条等距竖线，间距 HOME_LINE_GAP；图按 HOME_LINE_ORDER 轮流放到这三条线上（0 左、1 中、2 右），
-# 圆心压线，再按 HOME_NUDGE 左右错开一点。每张图以中心为圆心画圆，半径 = 半条对角线 + HOME_GAP。
-# 每张图从上一张下面开始往下找，停在第一个不和任何圆重叠的位置；
-# 圆心至少比上一张低 HOME_MIN_DY，所以不会有两个圆心在同一水平线。
-HOME_LINE_GAP = 23
-HOME_LINE_ORDER = [0, 2, 1]
-HOME_NUDGE = [0, -3, 2, 3, -2, -2.5, 1.5, 2.5, -3]
-HOME_GAP = 2.3
-HOME_MIN_DY = 7
+# 首页小图的大小微调（1 = 标准；每张图面积统一，这里再乘）。体块图标不用，只管手绘图标
+HOME_ZOOM = {}
+# 首页阵列：一张看不见的等大格子表（宽:高 = 1 : HOME_CELL_H）。页面上没有线，每个格子角上一个小 +，眼睛自己连成格子。
+# 项目各占一格：名字压在这格左上角（顶替那个 +），图在格子里。HOME_CELLS[i] = 第 i 个项目的 (列, 行)，从 0 数。
+# 选格子的规矩：每行至少一个；空格远多于有图的格（约 3/4 空）；有几处左右相邻成对；不排成斜线（不出现三格连成的台阶）。
+HOME_COLS, HOME_ROWS, HOME_CELL_H = 8, 5, .8
+HOME_CELLS = [(0, 0), (3, 0), (5, 1), (6, 1), (0, 2), (2, 3), (3, 3), (7, 3), (1, 4)]
+# 手机：两栏七行，同样的规矩
+HOME_COLS_M, HOME_ROWS_M = 2, 7
+HOME_CELLS_M = [(0, 0), (0, 1), (1, 1), (1, 2), (0, 3), (0, 4), (1, 4), (1, 5), (0, 6)]
 IMG_EXT = ('.jpg', '.jpeg', '.png', '.webp')
 
 # ── 读数据 ──────────────────────────────────────────────
@@ -211,22 +209,6 @@ def shell(lang, page, title, body, desc=''):
 </html>
 '''
 
-def home_layout(items):
-    """items: [(宽 vw, 高 vw)]。返回每张图左上角相对页面中线的 (x, y) 和总高，单位 vw。"""
-    import math
-    c, r = [], []
-    for i, (w, h) in enumerate(items):
-        R = math.hypot(w, h) / 2 + HOME_GAP
-        x = (HOME_LINE_ORDER[i % len(HOME_LINE_ORDER)] - 1) * HOME_LINE_GAP + HOME_NUDGE[i % len(HOME_NUDGE)]
-        y = c[-1][1] + HOME_MIN_DY if c else 0.0
-        for (xj, yj), rj in zip(c, r):
-            dx = abs(x - xj)
-            if dx < R + rj: y = max(y, yj + math.sqrt((R + rj) ** 2 - dx * dx))
-        c.append((x, y)); r.append(R)
-    top = min(q[1] - h / 2 for q, (w, h) in zip(c, items))
-    out = [(q[0] - w / 2, q[1] - h / 2 - top) for q, (w, h) in zip(c, items)]
-    return out, max(y + h for (x, y), (w, h) in zip(out, items))
-
 def contact_links(lang):
     c = CV['contact']
     return (f'<a class="u" href="mailto:{E(c["email"])}">{S("email", lang)}</a><br>'
@@ -252,22 +234,20 @@ def home(lang):
     picks = [{'ar': MASS['icons'][p['slug']]['ar'], 'svg': MASS['icons'][p['slug']]['svg']} if p['slug'] in MASS['icons'] else d
              for p, d in zip(shown, picks)]
     zs = [1 if p['slug'] in MASS['icons'] else HOME_ZOOM.get(p['slug'], 1) for p in shown]
-    sizes = [(17 * d['ar'] ** .5 * z, 17 * d['ar'] ** .5 * z / d['ar']) for d, z in zip(picks, zs)]
-    pos, field_h = home_layout(sizes)
-    for p, d, z, (x, y) in zip(shown, picks, zs, pos):
-        rv = p['_index'] or p['_cover'] or d
+    for i, (p, d, z) in enumerate(zip(shown, picks, zs)):
+        (c, rw), (cm, rm) = HOME_CELLS[i % len(HOME_CELLS)], HOME_CELLS_M[i % len(HOME_CELLS_M)]
         title = E(T(p['title'], lang))
-        marks.append(f'  <a class="mark" style="--s:{d["ar"] ** 0.5:.3f};--z:{z};--x:{x:.2f}vw;--y:{y:.2f}vw" href="{p["slug"]}.html" data-img="{r}{rv["full"]}" '
-                     f'data-ar="{rv["ar"]:.4f}" data-title="{title}" data-year="{year_of(p)}">'
+        marks.append(f'  <a class="cell" style="--c:{c + 1};--r:{rw + 1};--cm:{cm + 1};--rm:{rm + 1};--s:{d["ar"] ** 0.5:.3f};--z:{z}" href="{p["slug"]}.html">'
+                     f'<span class="lbl">{title}</span>'
                      + (d['svg'].replace('role="img"', f'role="img" aria-label="{title}"') if 'svg' in d else
                         f'<img class="d" src="{r}{d["small"]}" width="{d["w"]}" height="{d["h"]}" alt="{title}" loading="lazy">') +
-                     f'<span class="mob">{title}</span></a>')
+                     '</a>')
     rows = ''.join(f'<div class="r"><h2 class="caps">{E(T(x["label"], lang))}</h2><p>{E(T(x["text"], lang))}</p></div>' for x in CV['closing'])
     rows += f'<div class="r"><h2 class="caps">{S("contact", lang)}</h2><p>{contact_links(lang)}</p></div>'
     rows += f'<div class="r pic"><img class="seal" src="{r}img/sig-c.png" alt="{S("name", lang)}"></div>'
     body = f"""{hero}
 
-<section class="field" style="--h:{field_h:.2f}vw">
+<section class="field" style="--cols-d:{HOME_COLS};--rows-d:{HOME_ROWS};--ch-d:{HOME_CELL_H};--cols-m:{HOME_COLS_M};--rows-m:{HOME_ROWS_M}">
 {MASS['defs']}
 {chr(10).join(marks)}
 </section>

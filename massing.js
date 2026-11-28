@@ -433,6 +433,30 @@
     return out;
   }
 
+  // ── 同一个太阳：每个体块往地面（z = 0）投一块硬阴影，方向全页一致 ──
+  // 太阳方位 phi：0 = 画面右边（东），90 = 画面后方，180 = 画面左边（西）。太阳总在画面后半边，影子落在体块前面看得见。
+  // el 是太阳高度角。白天按当地时间：早 6 点在右、下午 1 点在后、晚 8 点在左，中午最高；夜里固定一个低角度。
+  const sun = { phi: 50, el: 45 };
+  function sunAt(h) {
+    if (h < 6 || h > 20) return { phi: 40, el: 40 };
+    const t = (h - 6) / 14;
+    return { phi: 10 + 160 * t, el: 38 + 14 * Math.sin(Math.PI * t) };
+  }
+  function shadow(faces, X) {
+    const f = Math.PI / 180, ce = Math.cos(sun.el * f), cp = Math.cos(sun.phi * f), sp = Math.sin(sun.phi * f);
+    const S = [ce * (cp - sp) / Math.SQRT2, ce * (-cp - sp) / Math.SQRT2, Math.sin(sun.el * f)];   // 指向太阳；画面右 = (1,−1,0)/√2，画面后 = (−1,−1,0)/√2
+    let d = '';
+    faces.forEach((F) => {
+      // 每个面沿光线压到地面，所有面的投影合起来就是这个体块的影子；统一成同一绕向，nonzero 填充时才是并集
+      let q = F.pts.map((p) => proj(sub(p, mul(S, p[2] / S[2]))));
+      const a = area2(q);
+      if (Math.abs(a) < 1e-6) return;
+      if (a < 0) q = q.reverse();
+      d += 'M' + q.map(X).join('L') + 'Z';
+    });
+    return d ? `<path class="ms" d="${d}"/>` : '';
+  }
+
   // ── 出图 ──
   // 每个场景按静止状态的外框统一缩放：外框面积 = 100²，这样各个图标的线宽、斜线密度看起来一致
   function frame(scene) {
@@ -450,12 +474,13 @@
     const X = (p) => f2((p[0] - F.ox) * F.k + F.pad) + ' ' + f2((p[1] - F.oy) * F.k + F.pad);
     const { faces, edges } = build(scene, k);
     const { vis, hid, occ } = hlr(faces, edges);
+    const shade = shadow(faces, X);
     const fills = order(occ).map((f) => {
       const d = 'M' + f.p2.map(X).join('L') + 'Z';
       return f.accent ? `<path class="ma" d="${d}"/>` : `<path class="mf" d="${d}"/>`;
     }).join('');
     const path = (segs) => segs.map(([a, b]) => 'M' + X(a) + 'L' + X(b)).join('');
-    return `<g>${fills}</g><path class="mh" d="${path(hid)}"/><path class="mv" d="${path(vis)}"/>`;
+    return `${shade}<g>${fills}</g><path class="mh" d="${path(hid)}"/><path class="mv" d="${path(vis)}"/>`;
   }
   function svg(scene, attrs) {
     const F = frame(scene);
@@ -466,7 +491,7 @@
     '<pattern id="m-hatch" patternUnits="userSpaceOnUse" width="2.4" height="2.4" patternTransform="rotate(45)">' +
     '<rect width="2.4" height="2.4" class="mt"/><line x1="0" y1="0" x2="0" y2="2.4" class="ml"/></pattern></defs></svg>';
 
-  const api = { draw, svg, frame, DEFS };
+  const api = { draw, svg, frame, DEFS, sun, sunAt };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   root.Massing = api;
 
@@ -475,11 +500,19 @@
   const run = () => {
     const scenes = root.MASSING || {};
     const DUR = 900;
+    const still = [];
+    // 太阳跟着看的人当地的时间走（地址后面加 ?sun=9.5 可以看某个钟点的样子）
+    const setSun = () => {
+      const q = /[?&]sun=([\d.]+)/.exec(location.search), d = new Date();
+      Object.assign(sun, sunAt(q ? parseFloat(q[1]) : d.getHours() + d.getMinutes() / 60));
+      still.forEach((f) => f());
+    };
     document.querySelectorAll('svg.m[data-m]').forEach((el) => {
       const scene = scenes[el.dataset.m];
       if (!scene) return;
       const mark = el.closest('a') || el;
       let k = 0, target = 0, last = 0, raf = 0;
+      still.push(() => { if (!raf) el.innerHTML = draw(scene, k); });
       const dur = scene.dur || DUR;
       const tick = (now) => {
         const dt = last ? now - last : 16; last = now;
@@ -500,6 +533,8 @@
         io.observe(el);
       }
     });
+    setSun();
+    setInterval(setSun, 5 * 60 * 1000);
   };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run); else run();
 })(typeof window !== 'undefined' ? window : globalThis);
