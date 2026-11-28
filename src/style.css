@@ -201,11 +201,22 @@ h1, h2 { font: inherit; margin: 0; }
   .xh.wide { --l: 300vmax; }
 }
 
-/* ── 图标悬停微放大：提示可交互，只放大图本身，不挤动布局 ── */
+/* ── 图标悬停微放大：提示可交互，只放大图本身，不挤动布局（体块图标自己会动，不放大）── */
 @media (hover: hover) and (pointer: fine) {
   .mark .d { transition: transform .2s ease-out; }
-  .mark:hover .d { transform: scale(1.05); }
+  .mark:hover .d:not(.m) { transform: scale(1.05); }
 }
+
+/* ── 首页体块图标（data/massing.js + src/massing.js）：白面、细线、虚线是被挡住的边，强调色斜线是被操作的那块 ── */
+.m-defs { position: absolute; width: 0; height: 0; overflow: hidden; }
+.mark .d.m { display: block; width: 100%; height: auto; overflow: visible; mix-blend-mode: normal; }
+.m .mf { fill: #fff; stroke: #fff; stroke-width: .25; }
+.m .ma { fill: url(#m-hatch); stroke: url(#m-hatch); stroke-width: .25; }
+.m-defs .mt { fill: #fce9e3; }
+.m-defs .ml { stroke: #d9472b; stroke-width: .45; }
+.m .mv, .m .mh { fill: none; stroke: var(--ink); vector-effect: non-scaling-stroke; stroke-linecap: round; stroke-linejoin: round; }
+.m .mv { stroke-width: 1px; }
+.m .mh { stroke-width: .75px; stroke-dasharray: 3px 2.5px; opacity: .45; stroke-linecap: butt; }
 
 /* ── 手机 ── */
 @media (max-width: 800px) {

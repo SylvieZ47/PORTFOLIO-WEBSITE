@@ -8,7 +8,7 @@
   addEventListener('mousemove', (e) => {
     document.documentElement.classList.add('has-xh');
     xh.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
-    xh.classList.toggle('wide', e.target.tagName === 'IMG' || e.target.tagName === 'VIDEO');
+    xh.classList.toggle('wide', e.target.tagName === 'IMG' || e.target.tagName === 'VIDEO' || !!(e.target.closest && e.target.closest('svg.m')));
   });
   document.addEventListener('mouseleave', () => document.documentElement.classList.remove('has-xh'));
 })();

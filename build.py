@@ -34,6 +34,11 @@ IMG_EXT = ('.jpg', '.jpeg', '.png', '.webp')
 js = "global.window={};require('./data/projects.js');process.stdout.write(JSON.stringify(window))"
 D = json.loads(subprocess.run(['node', '-e', js], capture_output=True, check=True).stdout.decode('utf-8'))
 PROJECTS, TAX, CV = D['PROJECTS'], D['PROJECT_TAXONOMY'], D['CV_DATA']
+# 首页体块图标（data/massing.js 写形体和动作，src/massing.js 画线）：在这里先画好静止状态，直接写进 HTML
+js = ("const M=require('./data/massing.js'),R=require('./src/massing.js'),o={};"
+      "for(const k in M){const f=R.frame(M[k]);o[k]={svg:R.svg(M[k],'data-m=\"'+k+'\" role=\"img\"'),ar:f.w/f.h}}"
+      "process.stdout.write(JSON.stringify({icons:o,defs:R.DEFS}))")
+MASS = json.loads(subprocess.run(['node', '-e', js], capture_output=True, check=True).stdout.decode('utf-8'))
 
 STR = {
     'work': ('Work', '作品'), 'about': ('About', '关于'), 'cv': ('CV', '简历'),
@@ -244,7 +249,9 @@ def home(lang):
     rank = lambda p: HOME_ORDER.index(p['slug']) if p['slug'] in HOME_ORDER else len(HOME_ORDER)
     shown = [p for p in sorted(PROJECTS, key=rank) if p['_any']]
     picks = [p['_icon'] or (p['_dwgs'][0]['a'] if p['_dwgs'] else p['_cover']) for p in shown]
-    zs = [HOME_ZOOM.get(p['slug'], 1) for p in shown]
+    picks = [{'ar': MASS['icons'][p['slug']]['ar'], 'svg': MASS['icons'][p['slug']]['svg']} if p['slug'] in MASS['icons'] else d
+             for p, d in zip(shown, picks)]
+    zs = [1 if p['slug'] in MASS['icons'] else HOME_ZOOM.get(p['slug'], 1) for p in shown]
     sizes = [(17 * d['ar'] ** .5 * z, 17 * d['ar'] ** .5 * z / d['ar']) for d, z in zip(picks, zs)]
     pos, field_h = home_layout(sizes)
     for p, d, z, (x, y) in zip(shown, picks, zs, pos):
@@ -252,7 +259,8 @@ def home(lang):
         title = E(T(p['title'], lang))
         marks.append(f'  <a class="mark" style="--s:{d["ar"] ** 0.5:.3f};--z:{z};--x:{x:.2f}vw;--y:{y:.2f}vw" href="{p["slug"]}.html" data-img="{r}{rv["full"]}" '
                      f'data-ar="{rv["ar"]:.4f}" data-title="{title}" data-year="{year_of(p)}">'
-                     f'<img class="d" src="{r}{d["small"]}" width="{d["w"]}" height="{d["h"]}" alt="{title}" loading="lazy">'
+                     + (d['svg'].replace('role="img"', f'role="img" aria-label="{title}"') if 'svg' in d else
+                        f'<img class="d" src="{r}{d["small"]}" width="{d["w"]}" height="{d["h"]}" alt="{title}" loading="lazy">') +
                      f'<span class="mob">{title}</span></a>')
     rows = ''.join(f'<div class="r"><h2 class="caps">{E(T(x["label"], lang))}</h2><p>{E(T(x["text"], lang))}</p></div>' for x in CV['closing'])
     rows += f'<div class="r"><h2 class="caps">{S("contact", lang)}</h2><p>{contact_links(lang)}</p></div>'
@@ -260,9 +268,10 @@ def home(lang):
     body = f"""{hero}
 
 <section class="field" style="--h:{field_h:.2f}vw">
+{MASS['defs']}
 {chr(10).join(marks)}
-  <div class="reveal" aria-hidden="true"><img alt=""><div><span class="t"></span><span class="y mute"></span></div></div>
 </section>
+<script src="{r}massing.js"></script>
 
 <section class="grid closing">
 {rows}
@@ -435,6 +444,8 @@ with Image.open('assets/portrait-black.png') as im:   # 首页结尾右栏的头
     im = im.crop(im.split()[-1].getbbox()); im.thumbnail((600, 600)); im.save(f'{OUT}/img/sig-c.png')
 shutil.copyfile('src/style.css', f'{OUT}/style.css')
 shutil.copyfile('src/site.js', f'{OUT}/site.js')
+with open(f'{OUT}/massing.js', 'w', encoding='utf-8', newline='\n') as f:   # 首页体块图标：数据 + 画线程序合成一个文件
+    f.write(open('data/massing.js', encoding='utf-8').read() + '\n' + open('src/massing.js', encoding='utf-8').read())
 if os.path.isfile('assets/cv.pdf'): shutil.copyfile('assets/cv.pdf', f'{OUT}/cv.pdf')
 write(f'{OUT}/.nojekyll', '')
 for lang, d in (('en', OUT), ('zh', f'{OUT}/zh')):
